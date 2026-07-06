@@ -1,0 +1,34 @@
+name: Actualizar mercado MATBA
+
+on:
+  schedule:
+    # cada 15 min, de 13:00 a 20:00 UTC (10:00 a 17:00 hora argentina), lunes a viernes
+    - cron: '*/15 13-20 * * 1-5'
+  workflow_dispatch: {}   # botón para correrlo a mano cuando quieras
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bajar datos de MATBA
+        env:
+          MATBA_USER: ${{ secrets.MATBA_USER }}
+          MATBA_PASS: ${{ secrets.MATBA_PASS }}
+        run: node actualizar_mercado.js
+
+      - name: Commitear si hay cambios
+        run: |
+          git config user.name "matba-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add datos/mercado_live.json
+          git diff --cached --quiet && echo "sin cambios" || git commit -m "mercado $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
