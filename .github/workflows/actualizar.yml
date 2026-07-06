@@ -2,8 +2,9 @@ name: Actualizar mercado MATBA
 
 on:
   schedule:
-    # cada 15 min, de 13:00 a 20:00 UTC (10:00 a 17:00 hora argentina), lunes a viernes
-    - cron: '*/15 13-20 * * 1-5'
+    # cada 15 min en minutos "corridos" (GitHub satura los :00/:15/:30/:45 y los saltea),
+    # de 13:00 a 20:00 UTC (10:00 a 17:00 hora argentina), lunes a viernes
+    - cron: '7,22,37,52 13-20 * * 1-5'
   workflow_dispatch: {}   # botón para correrlo a mano cuando quieras
 
 permissions:
