@@ -1,0 +1,13 @@
+{
+  "name": "FEDEA · Motor de estructuras",
+  "short_name": "FEDEA",
+  "description": "Negocios estructurados de granos con datos MATBA ROFEX",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F4F6F9",
+  "theme_color": "#072146",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

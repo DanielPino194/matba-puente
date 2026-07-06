@@ -3,50 +3,612 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test datos MATBA · GitHub Pages</title>
+<title>FEDEA · Negocios Estructurados</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#072146">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--fondo:#131A16;--panel:#1B2620;--linea:#2C3D33;--tiza:#EAE6D8;--tiza2:#8FA095;--grano:#E3B23C;--verde:#7CC98F;--rojo:#E07A6B}
+:root{
+  --navy:#072146; --azul:#004481; --azul2:#1973B8; --aqua:#2DCCCD;
+  --fondo:#F4F6F9; --blanco:#FFFFFF; --linea:#E1E7EF; --texto:#121212;
+  --gris:#5C6770; --gris2:#8C99A6; --verde:#2E8B57; --rojo:#DA3851; --ambar:#C7920A;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--fondo);color:var(--tiza);font-family:system-ui,sans-serif;font-size:15px;padding:16px;line-height:1.5}
-.wrap{max-width:560px;margin:0 auto}
-h1{font-size:20px;margin-bottom:2px}
-.sub{color:var(--tiza2);font-size:13px;margin-bottom:14px}
-button{background:var(--grano);border:none;color:#1A1608;font-weight:700;font-size:15px;
-  border-radius:10px;padding:12px 16px;width:100%;margin:6px 0;cursor:pointer;font-family:inherit}
-pre{background:var(--panel);border:1px solid var(--linea);border-radius:10px;padding:12px;
-  font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin-top:10px;min-height:60px}
-.ok{color:var(--verde)} .err{color:var(--rojo)}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--fondo);color:var(--texto);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-size:14px;line-height:1.45;padding-bottom:70px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+
+/* ---- barra superior ---- */
+.topbar{background:var(--navy);color:#fff;padding:14px 0}
+.topbar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.marca{font-weight:800;font-size:17px;letter-spacing:-.01em}
+.marca span{color:var(--aqua)}
+.fecha-datos{font-size:12px;color:#B9C6D4;flex:1 1 auto}
+.btn-matba{background:var(--aqua);border:none;color:var(--navy);font-family:inherit;
+  font-weight:700;font-size:13px;border-radius:20px;padding:8px 16px;cursor:pointer}
+.btn-matba:hover{filter:brightness(1.06)}
+.matba-est{font-size:12px;color:#B9C6D4}
+.matba-est.ok{color:#7CE0C3} .matba-est.err{color:#FF9DA8}
+
+/* ---- panel de controles ---- */
+.panel{background:var(--blanco);border-bottom:1px solid var(--linea);
+  padding:14px 0 12px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px rgba(7,33,70,.06)}
+.controles{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-end}
+.ctrl .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gris2);font-weight:700;margin-bottom:5px}
+.tabs{display:flex;gap:0;border:1px solid var(--linea);border-radius:9px;overflow:hidden}
+.tabs .chip{background:var(--blanco);border:none;border-right:1px solid var(--linea);
+  color:var(--gris);padding:8px 16px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+.tabs .chip:last-child{border-right:none}
+.tabs .chip.on{background:var(--azul);color:#fff}
+.futuro-box{margin-left:auto;text-align:right}
+.futuro-box b{font-size:26px;font-weight:800;color:var(--navy);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.futuro-box .sub-fut{font-size:11px;color:var(--gris2)}
+.vol-ctrl input{width:84px;background:var(--blanco);border:1px solid var(--linea);color:var(--texto);
+  border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;font-weight:700;text-align:right}
+
+/* ---- secciones y tabla comparativa ---- */
+.seccion{margin-top:26px}
+.seccion h2{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.02em;
+  text-transform:uppercase;margin-bottom:2px}
+.seccion .desc{font-size:12px;color:var(--gris2);margin-bottom:8px}
+.tabla-wrap{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;
+  overflow-x:auto;box-shadow:0 1px 4px rgba(7,33,70,.05)}
+table.cmp{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:640px}
+table.cmp th{background:#F0F4F8;color:var(--gris);font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;padding:9px 12px;text-align:right;
+  border-bottom:1px solid var(--linea);white-space:nowrap}
+table.cmp th:first-child{text-align:left}
+table.cmp td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--linea);
+  font-size:13.5px;white-space:nowrap}
+table.cmp td:first-child{text-align:left;font-weight:700;color:var(--navy);white-space:normal;min-width:190px}
+table.cmp tr.fila{cursor:pointer}
+table.cmp tr.fila:hover td{background:#F6FAFD}
+table.cmp tr:last-child td{border-bottom:none}
+.mini-patas{display:block;font-size:11px;color:var(--gris2);font-weight:400;margin-top:1px}
+.v-verde{color:var(--verde);font-weight:700}
+.v-rojo{color:var(--rojo);font-weight:700}
+.v-navy{color:var(--navy);font-weight:700}
+.tag-comp{display:inline-block;background:#FDEEF0;color:var(--rojo);border-radius:6px;
+  padding:2px 8px;font-size:11px;font-weight:700}
+.tag-ok{display:inline-block;background:#EAF6EF;color:var(--verde);border-radius:6px;
+  padding:2px 8px;font-size:11px;font-weight:700}
+.flecha-fila{color:var(--gris2);font-size:15px;transition:transform .15s;display:inline-block}
+tr.abierta .flecha-fila{transform:rotate(90deg)}
+
+/* ---- detalle expandible ---- */
+tr.det-row{display:none}
+tr.det-row.visible{display:table-row}
+tr.det-row>td{background:#FAFCFE;padding:14px 16px 18px;white-space:normal}
+.det-patas{font-size:12.5px;color:var(--gris);margin-bottom:10px}
+.det-patas b{color:var(--navy)}
+.nota-prima{color:var(--ambar);font-size:11px}
+.mets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.met{border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;
+  font-variant-numeric:tabular-nums;background:var(--blanco);border:1px solid var(--linea);color:var(--gris)}
+.met b{font-size:13px;color:var(--navy)}
+.met.plus b{color:var(--verde)} .met.piso b{color:var(--azul2)} .met.act b{color:var(--rojo)}
+svg.curva{width:100%;height:130px;display:block;margin:4px 0 2px;background:var(--blanco);
+  border:1px solid var(--linea);border-radius:10px}
+.leyenda{font-size:11px;color:var(--gris2);display:flex;gap:16px;margin:6px 0 12px}
+.leyenda i{display:inline-block;width:14px;height:2.5px;vertical-align:middle;margin-right:5px;border-radius:2px}
+table.esc{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;
+  background:var(--blanco);border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+table.esc th{color:var(--gris);font-weight:700;text-align:right;padding:7px 10px;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--linea);background:#F0F4F8}
+table.esc td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--linea)}
+table.esc tr:last-child td{border-bottom:none}
+table.esc th:first-child,table.esc td:first-child{text-align:left}
+.nota{font-size:11px;color:var(--gris2);margin-top:7px}
+.masmenos{background:none;border:none;color:var(--azul2);font-family:inherit;
+  font-weight:700;font-size:12.5px;padding:10px 12px;cursor:pointer;width:100%;text-align:left}
+.masmenos:hover{text-decoration:underline}
+.vacio{color:var(--gris);font-size:13px;padding:18px;background:var(--blanco);
+  border:1px dashed var(--linea);border-radius:12px;margin-top:16px}
+footer{margin-top:34px;font-size:11px;color:var(--gris2)}
+@media (max-width:640px){
+  .futuro-box{margin-left:0;text-align:left;width:100%}
+  .tabs .chip{padding:8px 12px;font-size:12.5px}
+  body{font-size:13px}
+}
 </style>
 </head>
 <body>
+<div class="topbar"><div class="wrap">
+  <div class="marca">FEDEA <span>·</span> Motor de estructuras</div>
+  <div class="fecha-datos" id="fechaDatos"></div>
+  <button class="btn-matba" id="btnMatba">⟳ Actualizar desde MATBA</button>
+  <span class="matba-est" id="matbaEstado"></span>
+</div></div>
+
+<div class="panel"><div class="wrap controles">
+  <div class="ctrl"><div class="lbl">Producto</div><div class="tabs" id="selProd"></div></div>
+  <div class="ctrl"><div class="lbl">Posición</div><div class="tabs" id="selPos"></div></div>
+  <div class="ctrl vol-ctrl"><div class="lbl">Volumen base (tn)</div><input type="number" id="volBase" value="100" min="1"></div>
+  <div class="futuro-box" id="futRef"></div>
+</div></div>
+
 <div class="wrap">
-<h1>Test datos MATBA</h1>
-<div class="sub">Lee datos/mercado_live.json generado por GitHub Actions</div>
-<button onclick="probar()">Leer última foto de mercado</button>
-<pre id="out">Resultado…</pre>
+<div id="resultados"></div>
+<footer>Primas y ajustes: MATBA ROFEX (vía reMarkets) sobre base de reportes de cierre Zeni.
+Cada prima conserva la fecha de su última operación. Herramienta interna — no es asesoramiento financiero.</footer>
 </div>
+
 <script>
-async function probar(){
-  const out = document.getElementById('out');
-  out.textContent = 'Leyendo…';
+const MERCADO_ZENI = {"fecha_datos": "2026-07-01", "productos": {"MAÍZ": {"posiciones": {"04-2027": {"futuro": 184.9, "fecha_futuro": "2026-07-01", "calls": [{"strike": 188.0, "prima": 5.0, "fecha": "2026-07-01", "volumen": 32.0}, {"strike": 192.0, "prima": 3.8, "fecha": "2026-06-25", "volumen": 2.0}, {"strike": 212.0, "prima": 1.0, "fecha": "2026-06-26", "volumen": 1.0}], "puts": [{"strike": 176.0, "prima": 4.0, "fecha": "2026-06-29", "volumen": 50.0}]}, "07-2026": {"futuro": 178.5, "fecha_futuro": "2026-07-01", "calls": [], "puts": []}, "07-2027": {"futuro": 180.5, "fecha_futuro": "2026-07-01", "calls": [{"strike": 180.0, "prima": 6.5, "fecha": "2026-06-30", "volumen": 10.0}, {"strike": 184.0, "prima": 5.6, "fecha": "2026-07-01", "volumen": 20.0}, {"strike": 188.0, "prima": 4.0, "fecha": "2026-07-01", "volumen": 30.0}, {"strike": 192.0, "prima": 3.2, "fecha": "2026-07-01", "volumen": 20.0}], "puts": [{"strike": 168.0, "prima": 3.0, "fecha": "2026-06-30", "volumen": 23.0}]}, "09-2026": {"futuro": 182.8, "fecha_futuro": "2026-07-01", "calls": [], "puts": [{"strike": 176.0, "prima": 1.0, "fecha": "2026-07-01", "volumen": 4.0}, {"strike": 180.0, "prima": 1.8, "fecha": "2026-07-01", "volumen": 4.0}]}, "12-2026": {"futuro": 187.4, "fecha_futuro": "2026-07-01", "calls": [{"strike": 188.0, "prima": 5.0, "fecha": "2026-06-30", "volumen": 2.0}, {"strike": 192.0, "prima": 3.0, "fecha": "2026-06-29", "volumen": 10.0}, {"strike": 204.0, "prima": 1.0, "fecha": "2026-06-26", "volumen": 1.0}], "puts": [{"strike": 180.0, "prima": 3.5, "fecha": "2026-06-29", "volumen": 10.0}, {"strike": 184.0, "prima": 4.6, "fecha": "2026-06-29", "volumen": 5.0}]}}}, "SOJA": {"posiciones": {"05-2027": {"futuro": 325.4, "fecha_futuro": "2026-07-01", "calls": [{"strike": 328.0, "prima": 9.5, "fecha": "2026-06-29", "volumen": 3.0}, {"strike": 332.0, "prima": 7.0, "fecha": "2026-07-01", "volumen": 2.0}, {"strike": 336.0, "prima": 7.5, "fecha": "2026-06-26", "volumen": 10.0}, {"strike": 340.0, "prima": 6.0, "fecha": "2026-07-01", "volumen": 30.0}, {"strike": 348.0, "prima": 5.0, "fecha": "2026-06-25", "volumen": 4.0}, {"strike": 352.0, "prima": 3.5, "fecha": "2026-06-29", "volumen": 5.0}, {"strike": 356.0, "prima": 3.0, "fecha": "2026-07-01", "volumen": 2.0}], "puts": [{"strike": 308.0, "prima": 4.0, "fecha": "2026-07-01", "volumen": 6.0}, {"strike": 312.0, "prima": 4.7, "fecha": "2026-07-01", "volumen": 3.0}, {"strike": 316.0, "prima": 6.0, "fecha": "2026-06-25", "volumen": 5.0}, {"strike": 320.0, "prima": 7.3, "fecha": "2026-07-01", "volumen": 30.0}, {"strike": 324.0, "prima": 9.1, "fecha": "2026-06-30", "volumen": 17.0}]}, "07-2026": {"futuro": 323.5, "fecha_futuro": "2026-07-01", "calls": [], "puts": []}, "07-2027": {"futuro": 332.0, "fecha_futuro": "2026-07-01", "calls": [{"strike": 344.0, "prima": 11.9, "fecha": "2026-06-26", "volumen": 56.0}], "puts": [{"strike": 332.0, "prima": 14.1, "fecha": "2026-06-26", "volumen": 56.0}]}, "09-2026": {"futuro": 329.0, "fecha_futuro": "2026-07-01", "calls": [], "puts": []}, "11-2026": {"futuro": 332.5, "fecha_futuro": "2026-07-01", "calls": [{"strike": 340.0, "prima": 5.0, "fecha": "2026-07-01", "volumen": 10.0}, {"strike": 344.0, "prima": 4.5, "fecha": "2026-06-26", "volumen": 4.0}, {"strike": 348.0, "prima": 3.5, "fecha": "2026-06-29", "volumen": 20.0}, {"strike": 352.0, "prima": 2.7, "fecha": "2026-06-26", "volumen": 5.0}, {"strike": 360.0, "prima": 1.5, "fecha": "2026-07-01", "volumen": 33.0}, {"strike": 364.0, "prima": 1.0, "fecha": "2026-06-25", "volumen": 1.0}], "puts": [{"strike": 320.0, "prima": 2.0, "fecha": "2026-06-25", "volumen": 10.0}, {"strike": 324.0, "prima": 3.0, "fecha": "2026-06-25", "volumen": 5.0}, {"strike": 332.0, "prima": 6.8, "fecha": "2026-06-30", "volumen": 50.0}]}}}, "TRIGO": {"posiciones": {"01-2027": {"futuro": 209.7, "fecha_futuro": "2026-07-01", "calls": [{"strike": 212.0, "prima": 5.7, "fecha": "2026-07-01", "volumen": 1.0}, {"strike": 220.0, "prima": 4.2, "fecha": "2026-06-25", "volumen": 2.0}, {"strike": 264.0, "prima": 0.3, "fecha": "2026-06-30", "volumen": 3.0}], "puts": [{"strike": 192.0, "prima": 1.3, "fecha": "2026-06-25", "volumen": 3.0}, {"strike": 196.0, "prima": 2.0, "fecha": "2026-06-25", "volumen": 3.0}, {"strike": 200.0, "prima": 3.0, "fecha": "2026-07-01", "volumen": 10.0}, {"strike": 208.0, "prima": 7.5, "fecha": "2026-06-29", "volumen": 1.0}, {"strike": 220.0, "prima": 13.5, "fecha": "2026-07-01", "volumen": 3.0}]}, "03-2027": {"futuro": 212.0, "fecha_futuro": "2026-07-01", "calls": [], "puts": []}, "07-2026": {"futuro": 200.0, "fecha_futuro": "2026-07-01", "calls": [], "puts": []}, "12-2026": {"futuro": 207.2, "fecha_futuro": "2026-07-01", "calls": [{"strike": 212.0, "prima": 4.0, "fecha": "2026-06-30", "volumen": 3.0}, {"strike": 216.0, "prima": 3.5, "fecha": "2026-06-26", "volumen": 17.0}, {"strike": 220.0, "prima": 2.9, "fecha": "2026-06-30", "volumen": 1.0}, {"strike": 224.0, "prima": 2.0, "fecha": "2026-07-01", "volumen": 3.0}, {"strike": 228.0, "prima": 1.3, "fecha": "2026-06-29", "volumen": 10.0}, {"strike": 232.0, "prima": 0.7, "fecha": "2026-06-30", "volumen": 18.0}, {"strike": 236.0, "prima": 0.5, "fecha": "2026-06-26", "volumen": 5.0}, {"strike": 248.0, "prima": 0.3, "fecha": "2026-06-30", "volumen": 3.0}, {"strike": 252.0, "prima": 0.3, "fecha": "2026-06-30", "volumen": 6.0}, {"strike": 256.0, "prima": 0.2, "fecha": "2026-06-30", "volumen": 6.0}, {"strike": 260.0, "prima": 0.1, "fecha": "2026-06-30", "volumen": 3.0}, {"strike": 264.0, "prima": 0.1, "fecha": "2026-06-30", "volumen": 3.0}], "puts": [{"strike": 200.0, "prima": 3.0, "fecha": "2026-07-01", "volumen": 10.0}, {"strike": 212.0, "prima": 11.5, "fecha": "2026-06-30", "volumen": 4.0}, {"strike": 216.0, "prima": 13.0, "fecha": "2026-06-26", "volumen": 21.0}, {"strike": 220.0, "prima": 15.0, "fecha": "2026-07-01", "volumen": 11.0}, {"strike": 244.0, "prima": 37.5, "fecha": "2026-06-26", "volumen": 20.0}]}}}}, "tipo_cambio": {"nacion_compra": 1480.0, "nacion_venta": 1489.0, "bcra_a3500": 1487.769, "mtr_spot": 1489.5, "dolar_futuro_mtr": {"01-2027": 1684.5, "02-2027": 1712.5, "03-2027": 1746.0, "04-2027": 1776.0, "05-2027": 1811.0, "06-2026": 1534.0, "07-2026": 1507.0, "09-2026": 1561.0, "10-2026": 1591.0, "11-2026": 1621.0, "12-2026": 1652.0}}};let MERCADO = MERCADO_ZENI;
+
+// ---------- formato argentino ----------
+const fmt = (n, d=2) => n==null ? '—' :
+  n.toLocaleString('es-AR',{minimumFractionDigits:d, maximumFractionDigits:d});
+const fmt0 = n => fmt(n,0);
+const fmtUS = (n,d=2) => n==null ? '—' : 'U$S '+fmt(n,d);
+
+// ---------- estado ----------
+let prod = null, pos = null;
+
+// ---------- motor: payoff por estructura ----------
+function mkFijacion(F){
+  return {
+    id:'fijacion', nombre:'Fijación simple',
+    patas:[`Venta futuro a ${fmtUS(F)}`],
+    precioFinal:S=>F, tnExtra:S=>0,
+    mets:[{cls:'neutro',t:'Precio fijo',v:fmtUS(F)}],
+    orden:0
+  };
+}
+function mkDuplicacion(F, c){
+  const base = F + c.prima;
+  const pond = (F + c.prima + c.strike)/2;
+  return {
+    id:`dup-${c.strike}`, nombre:`Venta + Call lanzado ${fmt0(c.strike)}`,
+    patas:[`Venta futuro a ${fmtUS(F)}`,
+           `Lanza Call ${fmt0(c.strike)} · prima ${fmtUS(c.prima)}${notaPrima(c)}`],
+    precioFinal:S => S<=c.strike ? base : pond,
+    tnExtra:S => S>c.strike ? 1 : 0,
+    mets:[{cls:'plus',t:'Plus',v:'+'+fmtUS(c.prima)},
+          {cls:'neutro',t:'Precio base',v:fmtUS(base)},
+          {cls:'act',t:'Duplica arriba de',v:fmt0(c.strike)},
+          {cls:'neutro',t:'Si duplica (pond.)',v:fmtUS(pond)}],
+    orden: -c.prima
+  };
+}
+function mkPiso(F, p){
+  const piso = p.strike - p.prima;
+  return {
+    id:`piso-${p.strike}`, nombre:`Piso asegurado ${fmt0(p.strike)}`,
+    patas:[`Compra Put ${fmt0(p.strike)} · prima ${fmtUS(p.prima)}${notaPrima(p)}`,
+           'Grano sin vender: upside abierto'],
+    precioFinal:S => Math.max(S, p.strike) - p.prima,
+    tnExtra:S=>0,
+    mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
+          {cls:'neutro',t:'Costo',v:fmtUS(p.prima)},
+          {cls:'neutro',t:'Techo',v:'abierto'}],
+    orden: p.prima
+  };
+}
+function mkCollar(F, p, c){
+  const neto = p.prima - c.prima;
+  const piso = p.strike - neto, techo = c.strike - neto;
+  return {
+    id:`collar-${p.strike}-${c.strike}`,
+    nombre:`Collar ${fmt0(p.strike)} / ${fmt0(c.strike)}`,
+    patas:[`Compra Put ${fmt0(p.strike)} · ${fmtUS(p.prima)}${notaPrima(p)}`,
+           `Lanza Call ${fmt0(c.strike)} · ${fmtUS(c.prima)}${notaPrima(c)}`],
+    precioFinal:S => Math.min(Math.max(S,p.strike),c.strike) - neto,
+    tnExtra:S=>0,
+    mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
+          {cls:'act',t:'Techo',v:fmtUS(techo)},
+          {cls:'neutro',t:'Prima neta',v:fmtUS(neto)}],
+    orden: neto
+  };
+}
+function mkDupAcotada(F, c1, c2){
+  const neto = c1.prima - c2.prima;
+  const base = F + neto;
+  return {
+    id:`dupac-${c1.strike}-${c2.strike}`,
+    nombre:`Venta + Call spread lanzado ${fmt0(c1.strike)} / ${fmt0(c2.strike)}`,
+    patas:[`Venta futuro a ${fmtUS(F)}`,
+           `Lanza Call ${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
+           `Compra Call ${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
+    precioFinal:S => S<=c1.strike ? base
+      : (base + c1.strike + Math.max(S-c2.strike,0)) / 2,
+    tnExtra:S => S>c1.strike ? 1 : 0,
+    mets:[{cls:'plus',t:'Plus neto',v:'+'+fmtUS(neto)},
+          {cls:'neutro',t:'Precio base',v:fmtUS(base)},
+          {cls:'act',t:'Duplica arriba de',v:fmt0(c1.strike)},
+          {cls:'piso',t:'Recupera suba desde',v:fmt0(c2.strike)}],
+    orden: -neto
+  };
+}
+function mkCallSpreadSolo(F, c1, c2){
+  const neto = c1.prima - c2.prima;
+  const mejoraMax = (c2.strike - c1.strike) - neto;
+  return {
+    id:`cssolo-${c1.strike}-${c2.strike}`,
+    nombre:`Call spread solo ${fmt0(c1.strike)} / ${fmt0(c2.strike)}`,
+    patas:['Sin venta: para grano ya vendido (recompra la suba)',
+           `Compra Call ${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
+           `Lanza Call ${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
+    precioFinal:S => Math.max(S-c1.strike,0) - Math.max(S-c2.strike,0) - neto,
+    tnExtra:S=>0,
+    esResultado:true,
+    mets:[{cls:'neutro',t:'Costo',v:fmtUS(neto)},
+          {cls:'plus',t:'Mejora máx.',v:'+'+fmtUS(mejoraMax)},
+          {cls:'act',t:'Empieza a pagar en',v:fmt0(c1.strike + neto)}],
+    orden: neto
+  };
+}
+function mkCallSpread(F, c1, c2){
+  const neto = c1.prima - c2.prima;
+  const piso = F - neto;
+  const maximo = F + (c2.strike - c1.strike) - neto;
+  return {
+    id:`cspread-${c1.strike}-${c2.strike}`,
+    nombre:`Fijación + Call spread ${fmt0(c1.strike)} / ${fmt0(c2.strike)}`,
+    patas:[`Venta futuro a ${fmtUS(F)}`,
+           `Compra Call ${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
+           `Lanza Call ${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
+    precioFinal:S => F + Math.max(S-c1.strike,0) - Math.max(S-c2.strike,0) - neto,
+    tnExtra:S=>0,
+    mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
+          {cls:'plus',t:'Participa suba',v:`${fmt0(c1.strike)} a ${fmt0(c2.strike)}`},
+          {cls:'neutro',t:'Máximo',v:fmtUS(maximo)},
+          {cls:'neutro',t:'Costo neto',v:fmtUS(neto)}],
+    orden: neto
+  };
+}
+function mkPutSpread(F, p2, p1){
+  const neto = p2.prima - p1.prima;
+  const protMax = p2.strike - neto;
+  return {
+    id:`pspread-${p1.strike}-${p2.strike}`,
+    nombre:`Put spread ${fmt0(p2.strike)} / ${fmt0(p1.strike)}`,
+    patas:[`Compra Put ${fmt0(p2.strike)} · ${fmtUS(p2.prima)}${notaPrima(p2)}`,
+           `Lanza Put ${fmt0(p1.strike)} · ${fmtUS(p1.prima)}${notaPrima(p1)}`],
+    precioFinal:S => S + Math.max(p2.strike-S,0) - Math.max(p1.strike-S,0) - neto,
+    tnExtra:S=>0,
+    mets:[{cls:'piso',t:'Protege hasta',v:fmtUS(protMax)},
+          {cls:'neutro',t:'Prima neta',v:fmtUS(neto)},
+          {cls:'act',t:'Desprotegido bajo',v:fmt0(p1.strike)}],
+    orden: neto
+  };
+}
+function notaPrima(o){
+  const f = o.fecha, ult = MERCADO.fecha_datos;
+  if(f===ult) return '';
+  const [y,m,d] = f.split('-');
+  return ` <span class="nota-prima">(prima del ${parseInt(d)}/${parseInt(m)})</span>`;
+}
+
+// ---------- generador ----------
+function generar(prod, pos){
+  const d = MERCADO.productos[prod].posiciones[pos];
+  const F = d.futuro;
+  const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[]};
+  if(F==null) return out;
+  out.fijacion.push(mkFijacion(F));
+  d.calls.forEach(c => out.dup.push(mkDuplicacion(F,c)));
+  d.puts.forEach(p => out.piso.push(mkPiso(F,p)));
+  d.puts.forEach(p => d.calls.forEach(c => {
+    if(c.strike > p.strike) out.collar.push(mkCollar(F,p,c));
+  }));
+  const puts = [...d.puts].sort((a,b)=>a.strike-b.strike);
+  for(let i=0;i<puts.length;i++) for(let j=i+1;j<puts.length;j++)
+    out.pspread.push(mkPutSpread(F, puts[j], puts[i]));
+  const calls = [...d.calls].sort((a,b)=>a.strike-b.strike);
+  for(let i=0;i<calls.length;i++) for(let j=i+1;j<calls.length;j++){
+    out.cspread.push(mkCallSpread(F, calls[i], calls[j]));
+    out.cssolo.push(mkCallSpreadSolo(F, calls[i], calls[j]));
+    if(calls[i].prima > calls[j].prima)
+      out.dupac.push(mkDupAcotada(F, calls[i], calls[j]));
+  }
+  for(const k in out) out[k].sort((a,b)=>a.orden-b.orden);
+  return out;
+}
+
+// ---------- curva SVG (paleta clara) ----------
+function svgCurva(est, F){
+  const S0 = F*0.72, S1 = F*1.28, N = 90;
+  const xs=[], ys=[], sin=[]; let ymin=1e9, ymax=-1e9;
+  for(let i=0;i<=N;i++){
+    const S = S0 + (S1-S0)*i/N;
+    const y = est.precioFinal(S);
+    xs.push(S); ys.push(y); sin.push(S);
+    ymin=Math.min(ymin,y,S); ymax=Math.max(ymax,y,S);
+  }
+  const pad=(ymax-ymin)*0.08||1; ymin-=pad; ymax+=pad;
+  const W=520,H=130,ML=6,MR=6,MT=8,MB=18;
+  const X=s=>ML+(s-S0)/(S1-S0)*(W-ML-MR);
+  const Y=v=>MT+(1-(v-ymin)/(ymax-ymin))*(H-MT-MB);
+  const path=a=>a.map((v,i)=>`${i?'L':'M'}${X(xs[i]).toFixed(1)},${Y(v).toFixed(1)}`).join('');
+  let zona='';
+  let kAct=null;
+  for(let i=0;i<xs.length;i++) if(est.tnExtra(xs[i])>0){kAct=xs[i];break;}
+  if(kAct!=null){
+    zona=`<rect x="${X(kAct)}" y="${MT}" width="${W-MR-X(kAct)}" height="${H-MT-MB}"
+      fill="url(#raya)" opacity="0.5"/>`;
+  }
+  const fx=X(F);
+  return `<svg class="curva" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><pattern id="raya" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="none"/><line x1="0" y1="0" x2="0" y2="8" stroke="#DA3851" stroke-width="1.4" opacity="0.45"/>
+    </pattern></defs>
+    ${zona}
+    <line x1="${fx}" y1="${MT}" x2="${fx}" y2="${H-MB}" stroke="#8C99A6" stroke-dasharray="3,4" stroke-width="1"/>
+    <path d="${path(sin)}" stroke="#B9C6D4" stroke-width="1.4" fill="none" stroke-dasharray="2,4"/>
+    <path d="${path(ys)}" stroke="#004481" stroke-width="2.6" fill="none"/>
+    <text x="${fx+4}" y="${H-5}" fill="#8C99A6" font-size="10" font-family="Inter">F ${fmt0(F)}</text>
+  </svg>
+  <div class="leyenda"><span><i style="background:#004481"></i>estructura</span>
+  <span><i style="background:#B9C6D4"></i>sin cobertura</span>
+  ${kAct!=null?'<span><i style="background:repeating-linear-gradient(45deg,#DA3851,#DA3851 2px,transparent 2px,transparent 5px)"></i>entrega adicional</span>':''}</div>`;
+}
+
+// ---------- escenarios ----------
+function tablaEscenarios(est, F, vol){
+  const escs=[-0.2,-0.1,0,0.1,0.2].map(v=>Math.round(F*(1+v)));
+  let rows = escs.map(S=>{
+    const p = est.precioFinal(S), extra = est.tnExtra(S)*vol;
+    const bruto = p * (vol + extra);
+    return `<tr><td>${fmt0(S)}</td><td>${fmt(p)}</td>
+      <td>${extra?fmt0(extra):'—'}</td><td>${fmt0(bruto)}</td></tr>`;
+  }).join('');
+  return `<table class="esc"><tr><th>Si el futuro cierra en</th><th>${est.esResultado?'Resultado U$S/tn':'Precio final U$S/tn'}</th>
+    <th>Tn adicionales</th><th>Bruto total U$S</th></tr>${rows}</table>
+    <div class="nota">${est.esResultado?'Resultado por tn sobre el precio ya fijado.':'Precio final por tn sobre el total entregado.'} Bruto = ${est.esResultado?'resultado':'precio'} × (${fmt0(vol)} tn base + adicionales).</div>`;
+}
+
+// ---------- render: tabla comparativa por grupo ----------
+const GRUPOS = [
+  ['fijacion','Referencia','El precio que fijás hoy sin ninguna estructura.'],
+  ['dup','Venta con call lanzado (duplicación)','Cobrás un plus hoy; si el mercado supera el strike, entregás el doble a precio ponderado.'],
+  ['dupac','Venta + call spread lanzado (duplicación acotada)','Como la duplicación, pero recuperás la suba por encima del strike comprado.'],
+  ['piso','Piso asegurado (compra de put)','Pagás una prima y asegurás un mínimo; el grano queda sin vender, con la suba abierta.'],
+  ['collar','Collar (piso y techo)','Piso asegurado financiado con un techo: banda de precios conocida.'],
+  ['cspread','Fijación + call spread (participa en la suba)','Fijás y pagás por participar de la suba dentro de una banda.'],
+  ['cssolo','Call spread solo — sin venta (para grano ya vendido)','Recompra la suba de mercadería ya vendida. Los valores son mejora sobre el precio ya fijado.'],
+  ['pspread','Put spread','Protección parcial a menor costo: cubre hasta el strike lanzado.'],
+];
+const CAP = 4;
+
+function celdaPrecio(est, S, F){
+  const v = est.precioFinal(S);
+  if(est.esResultado){
+    const s = (v>=0?'+':'−') + fmt(Math.abs(v));
+    return `<td class="${v>0?'v-verde':(v<0?'v-rojo':'')}">${s}</td>`;
+  }
+  const cls = v >= F ? 'v-verde' : (v < F*0.97 ? 'v-rojo' : 'v-navy');
+  return `<td class="${cls}">${fmt(v)}</td>`;
+}
+
+function render(){
+  const cont = document.getElementById('resultados');
+  const d = MERCADO.productos[prod].posiciones[pos];
+  const F = d.futuro;
+  document.getElementById('futRef').innerHTML =
+    F!=null ? `<b>${fmtUS(F)}</b><div class="sub-fut">futuro ${prod} ${etPos(pos)} · ajuste ${etFecha(d.fecha_futuro)}</div>`
+            : `<div class="sub-fut">Sin ajuste de futuro para esta posición</div>`;
+  if(F==null){ cont.innerHTML = '<div class="vacio">No hay futuro de referencia para armar estructuras acá.</div>'; return; }
+  const vol = Math.max(1, parseInt(document.getElementById('volBase').value)||100);
+  const g = generar(prod,pos);
+  const SB = Math.round(F*0.85), SM = Math.round(F), SA = Math.round(F*1.15);
+  let html='';
+  for(const [key,titulo,desc] of GRUPOS){
+    const lista = g[key];
+    if(!lista.length) continue;
+    let filas='';
+    lista.forEach((e,i)=>{
+      const oculta = i>=CAP ? ` data-extra="${key}" style="display:none"` : '';
+      const comp = e.tnExtra(SA) > 0
+        ? `<span class="tag-comp">duplica</span>` : `<span class="tag-ok">tn fijas</span>`;
+      filas += `<tr class="fila" onclick="toggleDet(this)"${oculta}>
+        <td>${e.nombre}<span class="mini-patas">${e.patas.join(' · ')}</span></td>
+        ${celdaPrecio(e,SB,F)}${celdaPrecio(e,SM,F)}${celdaPrecio(e,SA,F)}
+        <td>${comp}</td><td><span class="flecha-fila">›</span></td>
+      </tr>
+      <tr class="det-row"${oculta.replace('style="display:none"','')}><td colspan="6">
+        <div class="mets">${e.mets.map(m=>`<span class="met ${m.cls}">${m.t}: <b>${m.v}</b></span>`).join('')}</div>
+        ${svgCurva(e,F)}
+        ${tablaEscenarios(e,F,vol)}
+      </td></tr>`;
+    });
+    html += `<div class="seccion"><h2>${titulo}</h2><div class="desc">${desc}</div>
+      <div class="tabla-wrap"><table class="cmp">
+      <tr><th>Estructura</th><th>Si baja 15% (${fmt0(SB)})</th><th>Si queda igual (${fmt0(SM)})</th>
+      <th>Si sube 15% (${fmt0(SA)})</th><th>Compromiso</th><th></th></tr>
+      ${filas}</table>
+      ${lista.length>CAP?`<button class="masmenos" onclick="mostrarExtra('${key}',this)">Mostrar ${lista.length-CAP} más ▾</button>`:''}
+      </div></div>`;
+  }
+  cont.innerHTML = html || '<div class="vacio">No hay opciones operadas en esta posición. Elegí otra.</div>';
+}
+
+function mostrarExtra(key,btn){
+  document.querySelectorAll(`tr[data-extra="${key}"]`).forEach(el=>el.style.display='');
+  btn.remove();
+}
+function toggleDet(tr){
+  const det = tr.nextElementSibling;
+  const abierta = det.classList.contains('visible');
+  det.classList.toggle('visible', !abierta);
+  tr.classList.toggle('abierta', !abierta);
+}
+
+function etFecha(f){ if(!f) return ''; const [y,m,d]=f.split('-'); return `${parseInt(d)}/${parseInt(m)}`; }
+
+// ---------- selectores ----------
+function initSel(){
+  const prods = Object.keys(MERCADO.productos).filter(p =>
+    Object.values(MERCADO.productos[p].posiciones).some(d=>d.calls.length||d.puts.length));
+  const sp = document.getElementById('selProd');
+  sp.innerHTML = prods.map(p=>`<button class="chip" data-p="${p}">${p}</button>`).join('');
+  sp.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ prod=b.dataset.p; marcar(sp,b); initPos(); });
+  prod = prods.includes('SOJA') && prods.indexOf(prod)<0 ? 'SOJA' : (prods.includes(prod)?prod:(prods.includes('SOJA')?'SOJA':prods[0]));
+  marcar(sp, sp.querySelector(`[data-p="${prod}"]`));
+  initPos();
+}
+function initPos(){
+  const poss = Object.entries(MERCADO.productos[prod].posiciones)
+    .filter(([,d])=>d.calls.length||d.puts.length).map(([k])=>k).sort();
+  const el = document.getElementById('selPos');
+  el.innerHTML = poss.map(p=>`<button class="chip" data-p="${p}">${etPos(p)}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ pos=b.dataset.p; marcar(el,b); render(); });
+  pos = poss.includes(pos) ? pos : poss[0];
+  marcar(el, el.querySelector(`[data-p="${pos}"]`));
+  render();
+}
+function marcar(cont,b){ cont.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }
+const MESES=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function etPos(p){ const [m,y]=p.split('-'); return `${MESES[parseInt(m)]}-${y.slice(2)}`; }
+
+// ---------- conexión MATBA ROFEX (reMarkets) ----------
+// URL del puente de datos (workflow de GitHub, actualiza cada 15 min en horario de rueda).
+// Se puede cambiar manteniendo apretado el botón "Actualizar" 2 segundos.
+const MATBA_URL_DEFECTO = 'https://raw.githubusercontent.com/DanielPino194/matba-puente/main/datos/mercado_live.json';
+
+const PRODS_MATBA = {'SOJ.ROS':'SOJA','MAI.ROS':'MAÍZ','TRI.ROS':'TRIGO',
+                     'GIR.ROS':'GIRASOL','SOR.ROS':'SORGO','CEB.ROS':'CEBADA'};
+const MESES_MATBA = {ENE:'01',FEB:'02',MAR:'03',ABR:'04',MAY:'05',JUN:'06',
+                     JUL:'07',AGO:'08',SEP:'09',OCT:'10',NOV:'11',DIC:'12'};
+function posMatba(mmaa){
+  const m = /^([A-Z]{3})(\d{2})$/.exec(mmaa||'');
+  return (m && MESES_MATBA[m[1]]) ? MESES_MATBA[m[1]]+'-20'+m[2] : null;
+}
+function parseSimboloMatba(sym){
+  if(!sym) return null;
+  const esp = sym.split(' ');
+  const partes = esp[0].split('/');
+  if(partes.length !== 2) return null;
+  const [prd, mmaa] = partes;
+  if(prd === 'DLR'){
+    const p = posMatba(mmaa);
+    return (p && esp.length === 1) ? {tipo:'dolar', pos:p} : null;
+  }
+  const nombre = PRODS_MATBA[prd];
+  if(!nombre) return null;
+  const p = posMatba(mmaa);
+  if(!p) return null;
+  if(esp.length === 1) return {tipo:'futuro', producto:nombre, pos:p};
+  if(esp.length === 3){
+    const k = parseFloat(esp[1]), pc = esp[2].toUpperCase();
+    if(!isFinite(k) || (pc!=='C' && pc!=='P')) return null;
+    return {tipo: pc==='C' ? 'call':'put', producto:nombre, pos:p, strike:k};
+  }
+  return null;
+}
+function precioMatba(e){
+  if(!e || typeof e !== 'object') return null;
+  for(const c of ['LA','CL','SE']){
+    const v = e[c];
+    if(v && typeof v === 'object' && v.price != null && isFinite(v.price))
+      return {precio:v.price, fecha: v.date ? new Date(v.date).toISOString().slice(0,10) : null, origen:c};
+  }
+  return null;
+}
+function traducirMatba(datos){
+  let ins = datos.instrumentos || datos.instrumentosAgro || [];
+  if(typeof ins === 'string') ins = JSON.parse(ins);
+  const md = datos.marketdata || datos.marketData || {};
+  const productos = {}, dolar = {};
+  let fechaMax = null;
+  for(const inst of ins){
+    const sym = inst.symbol || inst;
+    const p = parseSimboloMatba(sym); if(!p) continue;
+    const px = precioMatba(md[sym]); if(!px) continue;
+    if(px.fecha && (!fechaMax || px.fecha > fechaMax)) fechaMax = px.fecha;
+    if(p.tipo === 'dolar'){ dolar[p.pos] = px.precio; continue; }
+    const pr = productos[p.producto] = productos[p.producto] || {posiciones:{}};
+    const po = pr.posiciones[p.pos] = pr.posiciones[p.pos] ||
+               {futuro:null, fecha_futuro:null, calls:[], puts:[]};
+    const nv = md[sym] && md[sym].NV;
+    const vol = typeof nv === 'number' ? nv : (nv && isFinite(nv.size) ? nv.size : null);
+    if(p.tipo === 'futuro'){ po.futuro = px.precio; po.fecha_futuro = px.fecha; }
+    else po[p.tipo==='call'?'calls':'puts'].push(
+      {strike:p.strike, prima:px.precio, fecha:px.fecha, volumen:vol});
+  }
+  return {fecha_datos: fechaMax, productos, dolar_futuro: dolar};
+}
+function mezclarMercado(zeni, matba){
+  const out = JSON.parse(JSON.stringify(zeni));
+  let cambios = 0;
+  for(const [nombre, prod] of Object.entries(matba.productos)){
+    const oProd = out.productos[nombre] = out.productos[nombre] || {posiciones:{}};
+    for(const [k, pos] of Object.entries(prod.posiciones)){
+      const oPos = oProd.posiciones[k] = oProd.posiciones[k] ||
+                   {futuro:null, fecha_futuro:null, calls:[], puts:[]};
+      if(pos.futuro != null){ oPos.futuro = pos.futuro; oPos.fecha_futuro = pos.fecha_futuro; cambios++; }
+      for(const lado of ['calls','puts']){
+        for(const op of pos[lado]){
+          const ex = oPos[lado].find(x => x.strike === op.strike);
+          if(ex) Object.assign(ex, op); else oPos[lado].push(op);
+          cambios++;
+        }
+        oPos[lado].sort((a,b)=>a.strike-b.strike);
+      }
+    }
+  }
+  Object.assign(out.tipo_cambio.dolar_futuro_mtr, matba.dolar_futuro);
+  if(matba.fecha_datos && matba.fecha_datos > out.fecha_datos) out.fecha_datos = matba.fecha_datos;
+  return {mercado: out, cambios};
+}
+async function actualizarDesdeMatba(){
+  const est = document.getElementById('matbaEstado');
+  let url = localStorage.getItem('matba_url') || MATBA_URL_DEFECTO;
+  if(!url){
+    url = (prompt('Pegá la URL del puente de datos MATBA:')||'').trim();
+    if(!url) return;
+    localStorage.setItem('matba_url', url);
+  }
+  est.className = 'matba-est'; est.textContent = 'Actualizando…';
   try{
-    const r = await fetch('datos/mercado_live.json?t=' + Date.now());
-    if(!r.ok) throw new Error('HTTP ' + r.status + ' — ¿ya corrió el workflow al menos una vez?');
-    const j = await r.json();
-    const edad = Math.round((Date.now() - new Date(j.actualizado)) / 60000);
-    const conMD = Object.keys(j.marketdata || {}).length;
-    const opciones = j.instrumentos.filter(i => i.strike != null);
-    out.innerHTML = '<span class="ok">OK</span> — actualizado hace ' + edad + ' min\n' +
-      'Instrumentos agro: ' + j.instrumentos.length + ' (' + opciones.length + ' opciones)\n' +
-      'Con market data: ' + conMD + '\n\n' +
-      'Primeros símbolos:\n' +
-      j.instrumentos.slice(0, 30).map(i =>
-        i.symbol + (i.strike ? '  K=' + i.strike + (i.putOrCall === 1 ? ' CALL' : i.putOrCall === 0 ? ' PUT' : '') : '')
-      ).join('\n');
+    const r = await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const datos = await r.json();
+    const t = traducirMatba(datos);
+    const {mercado, cambios} = mezclarMercado(MERCADO_ZENI, t);
+    if(!cambios) throw new Error('el puente respondió pero sin precios');
+    MERCADO = mercado;
+    ponerFecha(`Datos MATBA ROFEX en vivo (${cambios} precios) sobre base Zeni`);
+    est.className = 'matba-est ok';
+    est.textContent = '✓ Actualizado ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    initSel();
   }catch(e){
-    out.innerHTML = '<span class="err">FALLÓ:</span> ' + e.message;
+    MERCADO = MERCADO_ZENI;
+    est.className = 'matba-est err';
+    est.textContent = '✗ Sin conexión ('+e.message+') — usando datos Zeni';
+    initSel();
   }
 }
+document.getElementById('btnMatba').onclick = actualizarDesdeMatba;
+let matbaHold;
+document.getElementById('btnMatba').addEventListener('pointerdown', ()=>{
+  matbaHold = setTimeout(()=>{
+    const u = prompt('URL del puente MATBA:', localStorage.getItem('matba_url')||MATBA_URL_DEFECTO);
+    if(u !== null){ localStorage.setItem('matba_url', u.trim()); }
+  }, 2000);
+});
+document.getElementById('btnMatba').addEventListener('pointerup', ()=>clearTimeout(matbaHold));
+
+function ponerFecha(txt){
+  if(txt){ document.getElementById('fechaDatos').textContent = txt; return; }
+  const [fy,fm,fd] = MERCADO.fecha_datos.split('-');
+  document.getElementById('fechaDatos').textContent =
+    `Datos MATBA ROFEX al ${parseInt(fd)}/${parseInt(fm)}/${fy} · cadena compuesta de últimos días operados`;
+}
+
+document.getElementById('volBase').addEventListener('change', render);
+ponerFecha();
+initSel();
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol === 'https:')
+  navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>

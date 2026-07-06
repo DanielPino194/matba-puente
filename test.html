@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test datos MATBA · GitHub Pages</title>
+<style>
+:root{--fondo:#131A16;--panel:#1B2620;--linea:#2C3D33;--tiza:#EAE6D8;--tiza2:#8FA095;--grano:#E3B23C;--verde:#7CC98F;--rojo:#E07A6B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--fondo);color:var(--tiza);font-family:system-ui,sans-serif;font-size:15px;padding:16px;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto}
+h1{font-size:20px;margin-bottom:2px}
+.sub{color:var(--tiza2);font-size:13px;margin-bottom:14px}
+button{background:var(--grano);border:none;color:#1A1608;font-weight:700;font-size:15px;
+  border-radius:10px;padding:12px 16px;width:100%;margin:6px 0;cursor:pointer;font-family:inherit}
+pre{background:var(--panel);border:1px solid var(--linea);border-radius:10px;padding:12px;
+  font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin-top:10px;min-height:60px}
+.ok{color:var(--verde)} .err{color:var(--rojo)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Test datos MATBA</h1>
+<div class="sub">Lee datos/mercado_live.json generado por GitHub Actions</div>
+<button onclick="probar()">Leer última foto de mercado</button>
+<pre id="out">Resultado…</pre>
+</div>
+<script>
+async function probar(){
+  const out = document.getElementById('out');
+  out.textContent = 'Leyendo…';
+  try{
+    const r = await fetch('datos/mercado_live.json?t=' + Date.now());
+    if(!r.ok) throw new Error('HTTP ' + r.status + ' — ¿ya corrió el workflow al menos una vez?');
+    const j = await r.json();
+    const edad = Math.round((Date.now() - new Date(j.actualizado)) / 60000);
+    const conMD = Object.keys(j.marketdata || {}).length;
+    const opciones = j.instrumentos.filter(i => i.strike != null);
+    out.innerHTML = '<span class="ok">OK</span> — actualizado hace ' + edad + ' min\n' +
+      'Instrumentos agro: ' + j.instrumentos.length + ' (' + opciones.length + ' opciones)\n' +
+      'Con market data: ' + conMD + '\n\n' +
+      'Primeros símbolos:\n' +
+      j.instrumentos.slice(0, 30).map(i =>
+        i.symbol + (i.strike ? '  K=' + i.strike + (i.putOrCall === 1 ? ' CALL' : i.putOrCall === 0 ? ' PUT' : '') : '')
+      ).join('\n');
+  }catch(e){
+    out.innerHTML = '<span class="err">FALLÓ:</span> ' + e.message;
+  }
+}
+</script>
+</body>
+</html>
