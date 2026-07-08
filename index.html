@@ -476,9 +476,11 @@ const PRODS_MATBA = {'SOJ.ROS':'SOJA','MAI.ROS':'MAÍZ','TRI.ROS':'TRIGO',
                      'GIR.ROS':'GIRASOL','SOR.ROS':'SORGO','CEB.ROS':'CEBADA'};
 const MESES_MATBA = {ENE:'01',FEB:'02',MAR:'03',ABR:'04',MAY:'05',JUN:'06',
                      JUL:'07',AGO:'08',SEP:'09',OCT:'10',NOV:'11',DIC:'12'};
+// "NOV26" estandar | "NOV26M"/"NOV26A" mayorista -> {pos, mayorista}
 function posMatba(mmaa){
-  const m = /^([A-Z]{3})(\d{2})$/.exec(mmaa||'');
-  return (m && MESES_MATBA[m[1]]) ? MESES_MATBA[m[1]]+'-20'+m[2] : null;
+  const m = /^([A-Z]{3})(\d{2})([MA])?$/.exec(mmaa||'');
+  if(!m || !MESES_MATBA[m[1]]) return null;
+  return { pos: MESES_MATBA[m[1]]+'-20'+m[2], mayorista: !!m[3] };
 }
 function parseSimboloMatba(sym){
   if(!sym) return null;
@@ -488,17 +490,17 @@ function parseSimboloMatba(sym){
   const [prd, mmaa] = partes;
   if(prd === 'DLR'){
     const p = posMatba(mmaa);
-    return (p && esp.length === 1) ? {tipo:'dolar', pos:p} : null;
+    return (p && esp.length === 1) ? {tipo:'dolar', pos:p.pos, mayorista:p.mayorista} : null;
   }
   const nombre = PRODS_MATBA[prd];
   if(!nombre) return null;
   const p = posMatba(mmaa);
   if(!p) return null;
-  if(esp.length === 1) return {tipo:'futuro', producto:nombre, pos:p};
+  if(esp.length === 1) return {tipo:'futuro', producto:nombre, pos:p.pos, mayorista:p.mayorista};
   if(esp.length === 3){
     const k = parseFloat(esp[1]), pc = esp[2].toUpperCase();
     if(!isFinite(k) || (pc!=='C' && pc!=='P')) return null;
-    return {tipo: pc==='C' ? 'call':'put', producto:nombre, pos:p, strike:k};
+    return {tipo: pc==='C' ? 'call':'put', producto:nombre, pos:p.pos, strike:k, mayorista:p.mayorista};
   }
   return null;
 }
@@ -515,22 +517,34 @@ function traducirMatba(datos){
   let ins = datos.instrumentos || datos.instrumentosAgro || [];
   if(typeof ins === 'string') ins = JSON.parse(ins);
   const md = datos.marketdata || datos.marketData || {};
-  const productos = {}, dolar = {};
+  const productos = {}, dolar = {}, dolarStd = {};
   let fechaMax = null;
   for(const inst of ins){
     const sym = inst.symbol || inst;
     const p = parseSimboloMatba(sym); if(!p) continue;
     const px = precioMatba(md[sym]); if(!px) continue;
     if(px.fecha && (!fechaMax || px.fecha > fechaMax)) fechaMax = px.fecha;
-    if(p.tipo === 'dolar'){ dolar[p.pos] = px.precio; continue; }
+    if(p.tipo === 'dolar'){
+      if(!p.mayorista){ dolar[p.pos] = px.precio; dolarStd[p.pos] = true; }
+      else if(!dolarStd[p.pos] && dolar[p.pos] == null){ dolar[p.pos] = px.precio; }
+      continue;
+    }
     const pr = productos[p.producto] = productos[p.producto] || {posiciones:{}};
     const po = pr.posiciones[p.pos] = pr.posiciones[p.pos] ||
                {futuro:null, fecha_futuro:null, calls:[], puts:[]};
     const nv = md[sym] && md[sym].NV;
     const vol = typeof nv === 'number' ? nv : (nv && isFinite(nv.size) ? nv.size : null);
-    if(p.tipo === 'futuro'){ po.futuro = px.precio; po.fecha_futuro = px.fecha; }
-    else po[p.tipo==='call'?'calls':'puts'].push(
-      {strike:p.strike, prima:px.precio, fecha:px.fecha, volumen:vol});
+    if(p.tipo === 'futuro'){
+      // preferir el contrato estandar; el mayorista (sufijo M/A) solo si no hay otro
+      if(!p.mayorista){ po.futuro = px.precio; po.fecha_futuro = px.fecha; po._futStd = true; }
+      else if(!po._futStd && po.futuro == null){ po.futuro = px.precio; po.fecha_futuro = px.fecha; }
+    } else {
+      const lado = po[p.tipo==='call'?'calls':'puts'];
+      const ex = lado.find(x => x.strike === p.strike);
+      const op = {strike:p.strike, prima:px.precio, fecha:px.fecha, volumen:vol, _std:!p.mayorista};
+      if(!ex) lado.push(op);
+      else if(!ex._std || !p.mayorista) Object.assign(ex, op);
+    }
   }
   return {fecha_datos: fechaMax, productos, dolar_futuro: dolar};
 }
