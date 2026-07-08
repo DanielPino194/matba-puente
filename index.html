@@ -590,7 +590,8 @@ async function actualizarDesdeMatba(){
     MERCADO = mercado;
     ponerFecha(`Datos MATBA ROFEX en vivo (${cambios} precios) sobre base Zeni`);
     est.className = 'matba-est ok';
-    est.textContent = '✓ Actualizado ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    const hFoto = datos.actualizado ? new Date(datos.actualizado).toLocaleString('es-AR',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    est.textContent = '✓ Foto del mercado: ' + (hFoto || new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
     initSel();
   }catch(e){
     MERCADO = MERCADO_ZENI;
@@ -619,6 +620,7 @@ function ponerFecha(txt){
 document.getElementById('volBase').addEventListener('change', render);
 ponerFecha();
 initSel();
+actualizarDesdeMatba();   // al abrir, busca solo la ultima foto del mercado
 </script>
 <script>
 if ('serviceWorker' in navigator && location.protocol === 'https:')
