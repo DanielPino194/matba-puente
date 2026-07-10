@@ -45,7 +45,10 @@ body{background:var(--fondo);color:var(--texto);
   color:var(--gris);padding:8px 16px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
 .tabs .chip:last-child{border-right:none}
 .tabs .chip.on{background:var(--azul);color:#fff}
-.futuro-box{margin-left:auto;text-align:right}
+.futuro-box{margin-left:auto;text-align:right;cursor:pointer}
+.futuro-box:hover b{color:var(--azul2)}
+.sub-fut .manual{color:var(--ambar);font-weight:700}
+.sub-fut .corregir{color:var(--azul2);font-weight:700}
 .futuro-box b{font-size:26px;font-weight:800;color:var(--navy);
   font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .futuro-box .sub-fut{font-size:11px;color:var(--gris2)}
@@ -392,8 +395,8 @@ function render(){
   const d = MERCADO.productos[prod].posiciones[pos];
   const F = d.futuro;
   document.getElementById('futRef').innerHTML =
-    F!=null ? `<b>${fmtUS(F)}</b><div class="sub-fut">futuro ${prod} ${etPos(pos)} · ajuste ${etFecha(d.fecha_futuro)}</div>`
-            : `<div class="sub-fut">Sin ajuste de futuro para esta posición</div>`;
+    F!=null ? `<b>${fmtUS(F)}</b><div class="sub-fut">futuro ${prod} ${etPos(pos)} · ${d._manual ? '<span class="manual">✎ editado a mano</span>' : 'ajuste '+etFecha(d.fecha_futuro)+(d._mini?' · ref. contrato mini':'')} · <span class="corregir">corregir</span></div>`
+            : `<div class="sub-fut">Sin ajuste de futuro acá · <span class="corregir">tocá para cargarlo a mano</span></div>`;
   if(F==null){ cont.innerHTML = '<div class="vacio">No hay futuro de referencia para armar estructuras acá.</div>'; return; }
   const vol = Math.max(1, parseInt(document.getElementById('volBase').value)||100);
   const g = generar(prod,pos);
@@ -442,6 +445,39 @@ function toggleDet(tr){
 
 function etFecha(f){ if(!f) return ''; const [y,m,d]=f.split('-'); return `${parseInt(d)}/${parseInt(m)}`; }
 
+// ---------- corrección manual del futuro (válida por el día, guardada en el navegador) ----------
+function hoyISO(){ return new Date().toISOString().slice(0,10); }
+function cargarManuales(){ try{ return JSON.parse(localStorage.getItem('manual_futuros')||'{}'); }catch(e){ return {}; } }
+function conManual(base){
+  const out = JSON.parse(JSON.stringify(base));
+  const man = cargarManuales(), hoy = hoyISO();
+  for(const [k,v] of Object.entries(man)){
+    if(v.dia !== hoy) continue;                    // las correcciones vencen cada día
+    const [pr,po] = k.split('|');
+    const d = out.productos[pr] && out.productos[pr].posiciones[po];
+    if(d){ d.futuro = v.precio; d.fecha_futuro = hoy; d._manual = true; }
+  }
+  return out;
+}
+function editarFuturo(){
+  const d = MERCADO.productos[prod].posiciones[pos];
+  const man = cargarManuales(), k = prod+'|'+pos;
+  const actual = d.futuro != null ? String(d.futuro).replace('.',',') : '';
+  const r = prompt('Futuro '+prod+' '+etPos(pos)+' — poné el precio real que ves en MATBA.\n(Dejá vacío y Aceptar para volver al automático)', actual);
+  if(r === null) return;
+  const t = r.trim();
+  if(t === ''){ delete man[k]; }
+  else {
+    const v = t.includes(',') ? parseFloat(t.replace(/\./g,'').replace(',','.')) : parseFloat(t);
+    if(!isFinite(v) || v <= 0){ alert('No entendí ese precio. Probá por ejemplo: 329,90'); return; }
+    man[k] = { precio: v, dia: hoyISO() };
+  }
+  localStorage.setItem('manual_futuros', JSON.stringify(man));
+  MERCADO = conManual(MERCADO);   // reaplica sobre lo que esté cargado
+  if(t === '') actualizarDesdeMatba(); else render();
+}
+document.getElementById('futRef').onclick = editarFuturo;
+
 // ---------- selectores ----------
 function initSel(){
   const prods = Object.keys(MERCADO.productos).filter(p =>
@@ -472,8 +508,8 @@ function etPos(p){ const [m,y]=p.split('-'); return `${MESES[parseInt(m)]}-${y.s
 // Se puede cambiar manteniendo apretado el botón "Actualizar" 2 segundos.
 const MATBA_URL_DEFECTO = 'https://raw.githubusercontent.com/DanielPino194/matba-puente/main/datos/mercado_live.json';
 
-const PRODS_MATBA = {'SOJ.ROS':'SOJA','MAI.ROS':'MAÍZ','TRI.ROS':'TRIGO',
-                     'GIR.ROS':'GIRASOL','SOR.ROS':'SORGO','CEB.ROS':'CEBADA'};
+const PRODS_MATBA = {'SOJ':'SOJA','MAI':'MAÍZ','TRI':'TRIGO',
+                     'GIR':'GIRASOL','SOR':'SORGO','CEB':'CEBADA'};
 const MESES_MATBA = {ENE:'01',FEB:'02',MAR:'03',ABR:'04',MAY:'05',JUN:'06',
                      JUL:'07',AGO:'08',SEP:'09',OCT:'10',NOV:'11',DIC:'12'};
 // "NOV26" estandar | "NOV26M"/"NOV26A" mayorista -> {pos, mayorista}
@@ -492,15 +528,18 @@ function parseSimboloMatba(sym){
     const p = posMatba(mmaa);
     return (p && esp.length === 1) ? {tipo:'dolar', pos:p.pos, mayorista:p.mayorista} : null;
   }
-  const nombre = PRODS_MATBA[prd];
+  const pp = prd.split('.');            // "SOJ.ROS" estandar | "SOJ.MIN" mini
+  if(pp.length !== 2 || (pp[1] !== 'ROS' && pp[1] !== 'MIN')) return null;
+  const nombre = PRODS_MATBA[pp[0]];
   if(!nombre) return null;
+  const esMini = pp[1] === 'MIN';
   const p = posMatba(mmaa);
   if(!p) return null;
-  if(esp.length === 1) return {tipo:'futuro', producto:nombre, pos:p.pos, mayorista:p.mayorista};
+  if(esp.length === 1) return {tipo:'futuro', producto:nombre, pos:p.pos, mayorista:p.mayorista, mini:esMini};
   if(esp.length === 3){
     const k = parseFloat(esp[1]), pc = esp[2].toUpperCase();
     if(!isFinite(k) || (pc!=='C' && pc!=='P')) return null;
-    return {tipo: pc==='C' ? 'call':'put', producto:nombre, pos:p.pos, strike:k, mayorista:p.mayorista};
+    return {tipo: pc==='C' ? 'call':'put', producto:nombre, pos:p.pos, strike:k, mayorista:p.mayorista, mini:esMini};
   }
   return null;
 }
@@ -534,16 +573,19 @@ function traducirMatba(datos){
                {futuro:null, fecha_futuro:null, calls:[], puts:[]};
     const nv = md[sym] && md[sym].NV;
     const vol = typeof nv === 'number' ? nv : (nv && isFinite(nv.size) ? nv.size : null);
+    // jerarquia de contratos: estandar (3) > mayorista M/A (2) > mini (1)
+    const rango = p.mini ? 1 : (p.mayorista ? 2 : 3);
     if(p.tipo === 'futuro'){
-      // preferir el contrato estandar; el mayorista (sufijo M/A) solo si no hay otro
-      if(!p.mayorista){ po.futuro = px.precio; po.fecha_futuro = px.fecha; po._futStd = true; }
-      else if(!po._futStd && po.futuro == null){ po.futuro = px.precio; po.fecha_futuro = px.fecha; }
+      if((po._futRk||0) <= rango){
+        po.futuro = px.precio; po.fecha_futuro = px.fecha;
+        po._futRk = rango; po._mini = (rango === 1);
+      }
     } else {
       const lado = po[p.tipo==='call'?'calls':'puts'];
       const ex = lado.find(x => x.strike === p.strike);
-      const op = {strike:p.strike, prima:px.precio, fecha:px.fecha, volumen:vol, _std:!p.mayorista};
+      const op = {strike:p.strike, prima:px.precio, fecha:px.fecha, volumen:vol, _rk:rango};
       if(!ex) lado.push(op);
-      else if(!ex._std || !p.mayorista) Object.assign(ex, op);
+      else if((ex._rk||0) <= rango) Object.assign(ex, op);
     }
   }
   return {fecha_datos: fechaMax, productos, dolar_futuro: dolar};
@@ -556,7 +598,7 @@ function mezclarMercado(zeni, matba){
     for(const [k, pos] of Object.entries(prod.posiciones)){
       const oPos = oProd.posiciones[k] = oProd.posiciones[k] ||
                    {futuro:null, fecha_futuro:null, calls:[], puts:[]};
-      if(pos.futuro != null){ oPos.futuro = pos.futuro; oPos.fecha_futuro = pos.fecha_futuro; cambios++; }
+      if(pos.futuro != null){ oPos.futuro = pos.futuro; oPos.fecha_futuro = pos.fecha_futuro; oPos._mini = !!pos._mini; cambios++; }
       for(const lado of ['calls','puts']){
         for(const op of pos[lado]){
           const ex = oPos[lado].find(x => x.strike === op.strike);
@@ -587,14 +629,14 @@ async function actualizarDesdeMatba(){
     const t = traducirMatba(datos);
     const {mercado, cambios} = mezclarMercado(MERCADO_ZENI, t);
     if(!cambios) throw new Error('el puente respondió pero sin precios');
-    MERCADO = mercado;
+    MERCADO = conManual(mercado);
     ponerFecha(`Datos MATBA ROFEX en vivo (${cambios} precios) sobre base Zeni`);
     est.className = 'matba-est ok';
     const hFoto = datos.actualizado ? new Date(datos.actualizado).toLocaleString('es-AR',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
     est.textContent = '✓ Foto del mercado: ' + (hFoto || new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
     initSel();
   }catch(e){
-    MERCADO = MERCADO_ZENI;
+    MERCADO = conManual(MERCADO_ZENI);
     est.className = 'matba-est err';
     est.textContent = '✗ Sin conexión ('+e.message+') — usando datos Zeni';
     initSel();
@@ -618,6 +660,7 @@ function ponerFecha(txt){
 }
 
 document.getElementById('volBase').addEventListener('change', render);
+MERCADO = conManual(MERCADO_ZENI);
 ponerFecha();
 initSel();
 actualizarDesdeMatba();   // al abrir, busca solo la ultima foto del mercado
