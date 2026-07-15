@@ -614,33 +614,13 @@ function mezclarMercado(zeni, matba){
   return {mercado: out, cambios};
 }
 async function actualizarDesdeMatba(){
+  // Desconectado de MATBA/Primary (reMarkets = entorno demo, precios no reales).
+  // La app usa únicamente los cierres oficiales de Zeni. No hace ninguna conexión de red.
   const est = document.getElementById('matbaEstado');
-  let url = localStorage.getItem('matba_url') || MATBA_URL_DEFECTO;
-  if(!url){
-    url = (prompt('Pegá la URL del puente de datos MATBA:')||'').trim();
-    if(!url) return;
-    localStorage.setItem('matba_url', url);
-  }
-  est.className = 'matba-est'; est.textContent = 'Actualizando…';
-  try{
-    const r = await fetch(url, {cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const datos = await r.json();
-    const t = traducirMatba(datos);
-    const {mercado, cambios} = mezclarMercado(MERCADO_ZENI, t);
-    if(!cambios) throw new Error('el puente respondió pero sin precios');
-    MERCADO = conManual(mercado);
-    ponerFecha(`Datos MATBA ROFEX en vivo (${cambios} precios) sobre base Zeni`);
-    est.className = 'matba-est ok';
-    const hFoto = datos.actualizado ? new Date(datos.actualizado).toLocaleString('es-AR',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-    est.textContent = '✓ Foto del mercado: ' + (hFoto || new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
-    initSel();
-  }catch(e){
-    MERCADO = conManual(MERCADO_ZENI);
-    est.className = 'matba-est err';
-    est.textContent = '✗ Sin conexión ('+e.message+') — usando datos Zeni';
-    initSel();
-  }
+  MERCADO = conManual(MERCADO_ZENI);
+  ponerFecha();
+  if(est){ est.className = 'matba-est ok'; est.textContent = '✓ Cierres oficiales Zeni'; }
+  initSel();
 }
 document.getElementById('btnMatba').onclick = actualizarDesdeMatba;
 let matbaHold;
@@ -671,3 +651,4 @@ if ('serviceWorker' in navigator && location.protocol === 'https:')
 </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
