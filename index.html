@@ -191,7 +191,7 @@ function mkDuplicacion(F, c){
   return {
     id:`dup-${c.strike}`, nombre:`Venta + Call lanzado ${fmt0(c.strike)}`,
     patas:[`Venta futuro a ${fmtUS(F)}`,
-           `Lanza Call ${fmt0(c.strike)} · prima ${fmtUS(c.prima)}${notaPrima(c)}`],
+           `Lanza Call ${etOpPos(c)}${fmt0(c.strike)} · prima ${fmtUS(c.prima)}${notaPrima(c)}`],
     precioFinal:S => S<=c.strike ? base : pond,
     tnExtra:S => S>c.strike ? 1 : 0,
     mets:[{cls:'plus',t:'Plus',v:'+'+fmtUS(c.prima)},
@@ -205,7 +205,7 @@ function mkPiso(F, p){
   const piso = p.strike - p.prima;
   return {
     id:`piso-${p.strike}`, nombre:`Piso asegurado ${fmt0(p.strike)}`,
-    patas:[`Compra Put ${fmt0(p.strike)} · prima ${fmtUS(p.prima)}${notaPrima(p)}`,
+    patas:[`Compra Put ${etOpPos(p)}${fmt0(p.strike)} · prima ${fmtUS(p.prima)}${notaPrima(p)}`,
            'Grano sin vender: upside abierto'],
     precioFinal:S => Math.max(S, p.strike) - p.prima,
     tnExtra:S=>0,
@@ -221,8 +221,8 @@ function mkCollar(F, p, c){
   return {
     id:`collar-${p.strike}-${c.strike}`,
     nombre:`Collar ${fmt0(p.strike)} / ${fmt0(c.strike)}`,
-    patas:[`Compra Put ${fmt0(p.strike)} · ${fmtUS(p.prima)}${notaPrima(p)}`,
-           `Lanza Call ${fmt0(c.strike)} · ${fmtUS(c.prima)}${notaPrima(c)}`],
+    patas:[`Compra Put ${etOpPos(p)}${fmt0(p.strike)} · ${fmtUS(p.prima)}${notaPrima(p)}`,
+           `Lanza Call ${etOpPos(c)}${fmt0(c.strike)} · ${fmtUS(c.prima)}${notaPrima(c)}`],
     precioFinal:S => Math.min(Math.max(S,p.strike),c.strike) - neto,
     tnExtra:S=>0,
     mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
@@ -238,8 +238,8 @@ function mkDupAcotada(F, c1, c2){
     id:`dupac-${c1.strike}-${c2.strike}`,
     nombre:`Venta + Call spread lanzado ${fmt0(c1.strike)} / ${fmt0(c2.strike)}`,
     patas:[`Venta futuro a ${fmtUS(F)}`,
-           `Lanza Call ${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
-           `Compra Call ${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
+           `Lanza Call ${etOpPos(c1)}${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
+           `Compra Call ${etOpPos(c2)}${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
     precioFinal:S => S<=c1.strike ? base
       : (base + c1.strike + Math.max(S-c2.strike,0)) / 2,
     tnExtra:S => S>c1.strike ? 1 : 0,
@@ -257,8 +257,8 @@ function mkCallSpreadSolo(F, c1, c2){
     id:`cssolo-${c1.strike}-${c2.strike}`,
     nombre:`Call spread solo ${fmt0(c1.strike)} / ${fmt0(c2.strike)}`,
     patas:['Sin venta: para grano ya vendido (recompra la suba)',
-           `Compra Call ${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
-           `Lanza Call ${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
+           `Compra Call ${etOpPos(c1)}${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
+           `Lanza Call ${etOpPos(c2)}${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
     precioFinal:S => Math.max(S-c1.strike,0) - Math.max(S-c2.strike,0) - neto,
     tnExtra:S=>0,
     esResultado:true,
@@ -276,8 +276,8 @@ function mkCallSpread(F, c1, c2){
     id:`cspread-${c1.strike}-${c2.strike}`,
     nombre:`Fijación + Call spread ${fmt0(c1.strike)} / ${fmt0(c2.strike)}`,
     patas:[`Venta futuro a ${fmtUS(F)}`,
-           `Compra Call ${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
-           `Lanza Call ${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
+           `Compra Call ${etOpPos(c1)}${fmt0(c1.strike)} · ${fmtUS(c1.prima)}${notaPrima(c1)}`,
+           `Lanza Call ${etOpPos(c2)}${fmt0(c2.strike)} · ${fmtUS(c2.prima)}${notaPrima(c2)}`],
     precioFinal:S => F + Math.max(S-c1.strike,0) - Math.max(S-c2.strike,0) - neto,
     tnExtra:S=>0,
     mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
@@ -293,8 +293,8 @@ function mkPutSpread(F, p2, p1){
   return {
     id:`pspread-${p1.strike}-${p2.strike}`,
     nombre:`Put spread ${fmt0(p2.strike)} / ${fmt0(p1.strike)}`,
-    patas:[`Compra Put ${fmt0(p2.strike)} · ${fmtUS(p2.prima)}${notaPrima(p2)}`,
-           `Lanza Put ${fmt0(p1.strike)} · ${fmtUS(p1.prima)}${notaPrima(p1)}`],
+    patas:[`Compra Put ${etOpPos(p2)}${fmt0(p2.strike)} · ${fmtUS(p2.prima)}${notaPrima(p2)}`,
+           `Lanza Put ${etOpPos(p1)}${fmt0(p1.strike)} · ${fmtUS(p1.prima)}${notaPrima(p1)}`],
     precioFinal:S => S + Math.max(p2.strike-S,0) - Math.max(p1.strike-S,0) - neto,
     tnExtra:S=>0,
     mets:[{cls:'piso',t:'Protege hasta',v:fmtUS(protMax)},
@@ -309,11 +309,14 @@ function notaPrima(o){
   const [y,m,d] = f.split('-');
   return ` <span class="nota-prima">(prima del ${parseInt(d)}/${parseInt(m)})</span>`;
 }
+function etOpPos(o){ return (o && o._pos) ? etPos(o._pos)+' ' : ''; }
 
 // ---------- generador ----------
 function generar(prod, pos){
   const d = MERCADO.productos[prod].posiciones[pos];
   const F = d.futuro;
+  (d.calls||[]).forEach(o=>{ if(!o._pos) o._pos = pos; });
+  (d.puts||[]).forEach(o=>{ if(!o._pos) o._pos = pos; });
   const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[]};
   if(F==null) return out;
   out.fijacion.push(mkFijacion(F));
@@ -740,6 +743,8 @@ function renderDispo(){
   if(!soja || !dPos){ cont.innerHTML = '<div class="vacio">No hay opciones de soja para armar coberturas.</div>'; return; }
   const F = dispoPrecio();
   const d = soja.posiciones[dPos];
+  (d.calls||[]).forEach(o=>{ if(!o._pos) o._pos = dPos; });
+  (d.puts||[]).forEach(o=>{ if(!o._pos) o._pos = dPos; });
   document.getElementById('dispoBase').innerHTML =
     `<b>${fmtUS(F)}</b><div class="sub-fut">soja disponible ${dPlaza} · opciones ${etPos(dPos)} · ${DISPO_NOTA[dPlaza]||''} · <span class="corregir">corregir</span></div>`;
   const vol = Math.max(1, parseInt(document.getElementById('volBase').value)||100);
