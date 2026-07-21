@@ -119,6 +119,16 @@ footer{margin-top:34px;font-size:11px;color:var(--gris2)}
   .tabs .chip{padding:8px 12px;font-size:12.5px}
   body{font-size:13px}
 }
+
+/* ---- venta disponible (U$S) + opciones ---- */
+#dispoWrap{margin-top:34px;border-top:2px solid var(--linea);padding-top:22px}
+#dispoWrap>h2{font-size:15px;font-weight:800;color:var(--navy);letter-spacing:-.01em;margin-bottom:2px}
+#dispoWrap>.desc{font-size:12px;color:var(--gris2);margin-bottom:12px}
+.dispo-ctrls{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-end;
+  background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:14px 16px;margin-bottom:4px}
+#dispoWrap .futuro-box{margin-left:auto;text-align:right}
+@media (max-width:640px){#dispoWrap .futuro-box{margin-left:0;text-align:left;width:100%}}
+
 </style>
 </head>
 <body>
@@ -138,6 +148,17 @@ footer{margin-top:34px;font-size:11px;color:var(--gris2)}
 
 <div class="wrap">
 <div id="resultados"></div>
+<div id="dispoWrap">
+  <h2>Venta disponible (U$S) + opciones</h2>
+  <div class="desc">Mismas estructuras, pero partiendo de la venta de soja física en dólares (mercado disponible) en vez del futuro. Tocá el precio para ajustarlo al que estés cerrando.</div>
+  <div class="dispo-ctrls">
+    <div class="ctrl"><div class="lbl">Plaza</div><div class="tabs" id="dispoPlaza"></div></div>
+    <div class="ctrl"><div class="lbl">Opciones (posición)</div><div class="tabs" id="dispoPos"></div></div>
+    <div class="futuro-box" id="dispoBase"></div>
+  </div>
+  <div id="dispoResultados"></div>
+</div>
+
 <footer>Primas y ajustes: MATBA ROFEX (vía reMarkets) sobre base de reportes de cierre Zeni.
 Cada prima conserva la fecha de su última operación. Herramienta interna — no es asesoramiento financiero.</footer>
 </div>
@@ -621,6 +642,7 @@ async function actualizarDesdeMatba(){
   ponerFecha();
   if(est){ est.className = 'matba-est ok'; est.textContent = '✓ Cierres oficiales Zeni'; }
   initSel();
+  initDispo();
 }
 document.getElementById('btnMatba').onclick = actualizarDesdeMatba;
 let matbaHold;
@@ -639,7 +661,125 @@ function ponerFecha(txt){
     `Datos MATBA ROFEX al ${parseInt(fd)}/${parseInt(fm)}/${fy} · cadena compuesta de últimos días operados`;
 }
 
+
+// ========== Venta disponible (U$S) + opciones ==========
+// Base = precio de soja física en dólares por plaza (editable). Reusa el mismo motor de estructuras.
+const DISPO_DEFAULTS = { 'Rosario': 335, 'Bahía': 335 };            // U$S/tn soja (fallback editable)
+const DISPO_NOTA = { 'Rosario':'Zeni 20/7: $500.000 dispo (pesos) — ajustá el U$S', 'Bahía':'Zeni 20/7: U$S 335 ctual' };
+let dPlaza = 'Rosario', dPos = null;
+
+function dispoMan(){ try{ return JSON.parse(localStorage.getItem('dispo_precios')||'{}'); }catch(e){ return {}; } }
+function dispoPrecio(){
+  const man = dispoMan();
+  if(man[dPlaza] && man[dPlaza].dia === hoyISO()) return man[dPlaza].precio;   // override manual del día
+  const zd = MERCADO.disponible && MERCADO.disponible.SOJA && MERCADO.disponible.SOJA[dPlaza];
+  if(zd != null) return zd;                                                    // dato de Zeni si algún día lo cargamos
+  return DISPO_DEFAULTS[dPlaza];
+}
+function editarDispo(){
+  const man = dispoMan();
+  const actual = String(dispoPrecio()).replace('.', ',');
+  const r = prompt('Soja disponible '+dPlaza+' — precio en U$S/tn que estás cerrando por el físico.\n(Dejá vacío y Aceptar para volver al valor de referencia)', actual);
+  if(r === null) return;
+  const t = r.trim();
+  if(t === ''){ delete man[dPlaza]; }
+  else {
+    const v = t.includes(',') ? parseFloat(t.replace(/\./g,'').replace(',','.')) : parseFloat(t);
+    if(!isFinite(v) || v <= 0){ alert('No entendí ese precio. Por ejemplo: 335 o 337,50'); return; }
+    man[dPlaza] = { precio: v, dia: hoyISO() };
+  }
+  localStorage.setItem('dispo_precios', JSON.stringify(man));
+  renderDispo();
+}
+
+// mismo generador que el modo futuro, pero recibiendo la base y la cadena de opciones directamente
+function generarBaseChain(F, d){
+  const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[]};
+  if(F == null || !d) return out;
+  out.fijacion.push(mkFijacion(F));
+  d.calls.forEach(c => out.dup.push(mkDuplicacion(F,c)));
+  d.puts.forEach(p => out.piso.push(mkPiso(F,p)));
+  d.puts.forEach(p => d.calls.forEach(c => { if(c.strike > p.strike) out.collar.push(mkCollar(F,p,c)); }));
+  const puts = [...d.puts].sort((a,b)=>a.strike-b.strike);
+  for(let i=0;i<puts.length;i++) for(let j=i+1;j<puts.length;j++) out.pspread.push(mkPutSpread(F, puts[j], puts[i]));
+  const calls = [...d.calls].sort((a,b)=>a.strike-b.strike);
+  for(let i=0;i<calls.length;i++) for(let j=i+1;j<calls.length;j++){
+    out.cspread.push(mkCallSpread(F, calls[i], calls[j]));
+    out.cssolo.push(mkCallSpreadSolo(F, calls[i], calls[j]));
+    if(calls[i].prima > calls[j].prima) out.dupac.push(mkDupAcotada(F, calls[i], calls[j]));
+  }
+  for(const k in out) out[k].sort((a,b)=>a.orden-b.orden);
+  return out;
+}
+
+function initDispo(){
+  const cont = document.getElementById('dispoWrap');
+  if(!cont) return;
+  const soja = MERCADO.productos['SOJA'];
+  if(!soja){ cont.style.display = 'none'; return; }
+  cont.style.display = '';
+  const sp = document.getElementById('dispoPlaza');
+  sp.innerHTML = Object.keys(DISPO_DEFAULTS).map(p=>`<button class="chip" data-p="${p}">${p}</button>`).join('');
+  sp.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ dPlaza=b.dataset.p; marcar(sp,b); renderDispo(); });
+  if(!Object.keys(DISPO_DEFAULTS).includes(dPlaza)) dPlaza = Object.keys(DISPO_DEFAULTS)[0];
+  marcar(sp, sp.querySelector(`[data-p="${dPlaza}"]`));
+  const poss = Object.entries(soja.posiciones).filter(([,d])=>d.calls.length||d.puts.length).map(([k])=>k).sort();
+  const el = document.getElementById('dispoPos');
+  el.innerHTML = poss.map(p=>`<button class="chip" data-p="${p}">${etPos(p)}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ dPos=b.dataset.p; marcar(el,b); renderDispo(); });
+  dPos = poss.includes(dPos) ? dPos : poss[0];
+  if(dPos) marcar(el, el.querySelector(`[data-p="${dPos}"]`));
+  document.getElementById('dispoBase').onclick = editarDispo;
+  renderDispo();
+}
+
+function renderDispo(){
+  const cont = document.getElementById('dispoResultados');
+  if(!cont) return;
+  const soja = MERCADO.productos['SOJA'];
+  if(!soja || !dPos){ cont.innerHTML = '<div class="vacio">No hay opciones de soja para armar coberturas.</div>'; return; }
+  const F = dispoPrecio();
+  const d = soja.posiciones[dPos];
+  document.getElementById('dispoBase').innerHTML =
+    `<b>${fmtUS(F)}</b><div class="sub-fut">soja disponible ${dPlaza} · opciones ${etPos(dPos)} · ${DISPO_NOTA[dPlaza]||''} · <span class="corregir">corregir</span></div>`;
+  const vol = Math.max(1, parseInt(document.getElementById('volBase').value)||100);
+  const g = generarBaseChain(F, d);
+  const SB = Math.round(F*0.85), SM = Math.round(F), SA = Math.round(F*1.15);
+  const relabel = s => s.replace('Venta futuro a', 'Venta disponible '+dPlaza+' a').replace('Venta futuro', 'Venta disponible '+dPlaza);
+  let html='';
+  for(const [key,titulo,desc] of GRUPOS){
+    const lista = g[key];
+    if(!lista.length) continue;
+    let filas='';
+    lista.forEach((e,i)=>{
+      const oculta = i>=CAP ? ` data-extra="d-${key}" style="display:none"` : '';
+      const comp = e.tnExtra(SA) > 0 ? `<span class="tag-comp">duplica</span>` : `<span class="tag-ok">tn fijas</span>`;
+      const patas = e.patas.map(relabel).join(' · ');
+      filas += `<tr class="fila" onclick="toggleDet(this)"${oculta}>
+        <td>${relabel(e.nombre)}<span class="mini-patas">${patas}</span></td>
+        ${celdaPrecio(e,SB,F)}${celdaPrecio(e,SM,F)}${celdaPrecio(e,SA,F)}
+        <td>${comp}</td><td><span class="flecha-fila">›</span></td>
+      </tr>
+      <tr class="det-row"${oculta.replace('style="display:none"','')}><td colspan="6">
+        <div class="mets">${e.mets.map(m=>`<span class="met ${m.cls}">${m.t}: <b>${m.v}</b></span>`).join('')}</div>
+        ${svgCurva(e,F)}
+        ${tablaEscenarios(e,F,vol)}
+      </td></tr>`;
+    });
+    html += `<div class="seccion"><h2>${titulo}</h2><div class="desc">${desc}</div>
+      <div class="tabla-wrap"><table class="cmp">
+      <tr><th>Estructura</th><th>Si baja 15% (${fmt0(SB)})</th><th>Si queda igual (${fmt0(SM)})</th>
+      <th>Si sube 15% (${fmt0(SA)})</th><th>Compromiso</th><th></th></tr>
+      ${filas}</table>
+      ${lista.length>CAP?`<button class="masmenos" onclick="mostrarExtra('d-${key}',this)">Mostrar ${lista.length-CAP} más ▾</button>`:''}
+      </div></div>`;
+  }
+  cont.innerHTML = html || '<div class="vacio">No hay opciones operadas en esta posición. Elegí otra.</div>';
+}
+// ========== fin venta disponible ==========
+
 document.getElementById('volBase').addEventListener('change', render);
+document.getElementById('volBase').addEventListener('change', function(){ var c=document.getElementById('dispoResultados'); if(c) renderDispo(); });
 MERCADO = conManual(MERCADO_ZENI);
 ponerFecha();
 initSel();
