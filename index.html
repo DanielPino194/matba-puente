@@ -164,13 +164,15 @@ Cada prima conserva la fecha de su última operación. Herramienta interna — n
 </div>
 
 <script>
-const MERCADO_ZENI = {"fecha_datos": "2026-08-12", "productos": {"TRIGO": {"posiciones": {"07-2026": {"futuro": 219.5, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "11-2026": {"futuro": 220.0, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}, "12-2026": {"futuro": 221.0, "fecha_futuro": "2026-08-12", "calls": [{"strike": 216.0, "prima": 14.0, "fecha": "2026-07-23", "volumen": 1.0}, {"strike": 220.0, "prima": 10.7, "fecha": "2026-07-17", "volumen": 5.0}, {"strike": 224.0, "prima": 7.7, "fecha": "2026-07-23", "volumen": 6.0}, {"strike": 228.0, "prima": 4.0, "fecha": "2026-08-12", "volumen": 7.0}, {"strike": 232.0, "prima": 3.0, "fecha": "2026-08-12", "volumen": 12.0}, {"strike": 236.0, "prima": 2.0, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 240.0, "prima": 2.0, "fecha": "2026-07-24", "volumen": 10.0}], "puts": [{"strike": 200.0, "prima": 0.8, "fecha": "2026-07-21", "volumen": 20.0}, {"strike": 208.0, "prima": 1.5, "fecha": "2026-07-22", "volumen": 4.0}, {"strike": 212.0, "prima": 4.5, "fecha": "2026-07-27", "volumen": 7.0}, {"strike": 216.0, "prima": 4.6, "fecha": "2026-08-12", "volumen": 56.0}, {"strike": 220.0, "prima": 6.5, "fecha": "2026-08-12", "volumen": 5.0}, {"strike": 224.0, "prima": 5.0, "fecha": "2026-07-22", "volumen": 5.0}]}, "01-2027": {"futuro": 224.0, "fecha_futuro": "2026-08-12", "calls": [{"strike": 228.0, "prima": 7.5, "fecha": "2026-07-24", "volumen": 1.0}, {"strike": 232.0, "prima": 4.5, "fecha": "2026-08-12", "volumen": 4.0}, {"strike": 236.0, "prima": 3.3, "fecha": "2026-08-12", "volumen": 4.0}, {"strike": 240.0, "prima": 2.9, "fecha": "2026-08-12", "volumen": 2.0}, {"strike": 244.0, "prima": 2.2, "fecha": "2026-08-11", "volumen": 2.0}, {"strike": 248.0, "prima": 2.0, "fecha": "2026-07-27", "volumen": 1.0}, {"strike": 252.0, "prima": 1.4, "fecha": "2026-07-17", "volumen": 20.0}, {"strike": 260.0, "prima": 0.4, "fecha": "2026-08-11", "volumen": 20.0}, {"strike": 264.0, "prima": 0.3, "fecha": "2026-08-11", "volumen": 20.0}], "puts": [{"strike": 208.0, "prima": 1.7, "fecha": "2026-07-22", "volumen": 15.0}, {"strike": 212.0, "prima": 4.0, "fecha": "2026-08-10", "volumen": 1.0}, {"strike": 216.0, "prima": 4.8, "fecha": "2026-08-12", "volumen": 14.0}, {"strike": 220.0, "prima": 5.0, "fecha": "2026-07-23", "volumen": 20.0}, {"strike": 224.0, "prima": 5.0, "fecha": "2026-07-22", "volumen": 5.0}, {"strike": 228.0, "prima": 6.2, "fecha": "2026-07-22", "volumen": 2.0}, {"strike": 232.0, "prima": 15.5, "fecha": "2026-08-11", "volumen": 15.0}]}, "03-2027": {"futuro": 229.0, "fecha_futuro": "2026-08-12", "calls": [{"strike": 232.0, "prima": 7.5, "fecha": "2026-08-12", "volumen": 5.0}], "puts": []}, "09-2026": {"futuro": 223.5, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}, "08-2026": {"futuro": 220.0, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}}}, "MAÍZ": {"posiciones": {"07-2026": {"futuro": 191.8, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "08-2026": {"futuro": 186.5, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}, "09-2026": {"futuro": 190.9, "fecha_futuro": "2026-08-12", "calls": [{"strike": 188.0, "prima": 2.0, "fecha": "2026-08-12", "volumen": 5.0}, {"strike": 192.0, "prima": 1.2, "fecha": "2026-07-27", "volumen": 6.0}, {"strike": 196.0, "prima": 1.4, "fecha": "2026-07-23", "volumen": 17.0}, {"strike": 200.0, "prima": 1.0, "fecha": "2026-07-24", "volumen": 3.0}, {"strike": 204.0, "prima": 0.6, "fecha": "2026-07-24", "volumen": 13.0}, {"strike": 208.0, "prima": 0.5, "fecha": "2026-07-24", "volumen": 33.0}], "puts": [{"strike": 180.0, "prima": 0.2, "fecha": "2026-07-22", "volumen": 2.0}, {"strike": 184.0, "prima": 0.3, "fecha": "2026-08-12", "volumen": 3.0}, {"strike": 188.0, "prima": 1.1, "fecha": "2026-07-21", "volumen": 6.0}]}, "12-2026": {"futuro": 197.4, "fecha_futuro": "2026-08-12", "calls": [{"strike": 192.0, "prima": 8.5, "fecha": "2026-07-23", "volumen": 25.0}, {"strike": 196.0, "prima": 6.2, "fecha": "2026-07-23", "volumen": 15.0}, {"strike": 200.0, "prima": 3.5, "fecha": "2026-08-12", "volumen": 2.0}, {"strike": 204.0, "prima": 3.0, "fecha": "2026-07-24", "volumen": 2.0}, {"strike": 208.0, "prima": 1.6, "fecha": "2026-08-12", "volumen": 10.0}, {"strike": 212.0, "prima": 1.1, "fecha": "2026-08-12", "volumen": 12.0}], "puts": [{"strike": 180.0, "prima": 1.0, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 184.0, "prima": 1.5, "fecha": "2026-07-23", "volumen": 3.0}, {"strike": 188.0, "prima": 2.0, "fecha": "2026-08-10", "volumen": 1.0}, {"strike": 192.0, "prima": 3.8, "fecha": "2026-07-24", "volumen": 5.0}, {"strike": 196.0, "prima": 5.9, "fecha": "2026-08-11", "volumen": 5.0}]}, "04-2027": {"futuro": 195.8, "fecha_futuro": "2026-08-12", "calls": [{"strike": 188.0, "prima": 7.7, "fecha": "2026-07-27", "volumen": 5.0}, {"strike": 192.0, "prima": 8.7, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 196.0, "prima": 6.0, "fecha": "2026-07-23", "volumen": 5.0}, {"strike": 200.0, "prima": 5.0, "fecha": "2026-08-12", "volumen": 161.0}, {"strike": 204.0, "prima": 3.0, "fecha": "2026-08-10", "volumen": 24.0}, {"strike": 208.0, "prima": 2.0, "fecha": "2026-07-27", "volumen": 4.0}], "puts": [{"strike": 180.0, "prima": 2.0, "fecha": "2026-07-22", "volumen": 3.0}, {"strike": 184.0, "prima": 2.8, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 188.0, "prima": 4.4, "fecha": "2026-07-22", "volumen": 5.0}]}, "07-2027": {"futuro": 193.5, "fecha_futuro": "2026-08-12", "calls": [{"strike": 188.0, "prima": 6.1, "fecha": "2026-07-17", "volumen": 1.0}, {"strike": 192.0, "prima": 6.0, "fecha": "2026-07-23", "volumen": 4.0}, {"strike": 196.0, "prima": 6.0, "fecha": "2026-08-12", "volumen": 3.0}, {"strike": 200.0, "prima": 4.9, "fecha": "2026-08-12", "volumen": 106.0}, {"strike": 204.0, "prima": 2.7, "fecha": "2026-07-24", "volumen": 10.0}], "puts": [{"strike": 180.0, "prima": 3.3, "fecha": "2026-08-11", "volumen": 50.0}, {"strike": 184.0, "prima": 3.8, "fecha": "2026-08-12", "volumen": 61.0}]}, "09-2027": {"futuro": 197.4, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}, "01-2027": {"futuro": 198.5, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}}}, "SOJA": {"posiciones": {"07-2026": {"futuro": 348.0, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "09-2026": {"futuro": 344.0, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}, "11-2026": {"futuro": 348.7, "fecha_futuro": "2026-08-12", "calls": [{"strike": 340.0, "prima": 16.7, "fecha": "2026-07-22", "volumen": 15.0}, {"strike": 344.0, "prima": 10.8, "fecha": "2026-07-21", "volumen": 6.0}, {"strike": 348.0, "prima": 11.0, "fecha": "2026-07-24", "volumen": 5.0}, {"strike": 352.0, "prima": 5.8, "fecha": "2026-08-10", "volumen": 8.0}, {"strike": 356.0, "prima": 4.0, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 360.0, "prima": 3.2, "fecha": "2026-08-11", "volumen": 4.0}, {"strike": 364.0, "prima": 4.0, "fecha": "2026-07-24", "volumen": 36.0}, {"strike": 372.0, "prima": 1.5, "fecha": "2026-07-20", "volumen": 42.0}, {"strike": 380.0, "prima": 1.5, "fecha": "2026-07-20", "volumen": 10.0}], "puts": [{"strike": 316.0, "prima": 0.6, "fecha": "2026-08-10", "volumen": 8.0}, {"strike": 320.0, "prima": 0.8, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 324.0, "prima": 1.0, "fecha": "2026-08-12", "volumen": 10.0}, {"strike": 328.0, "prima": 1.3, "fecha": "2026-08-10", "volumen": 1.0}, {"strike": 332.0, "prima": 1.9, "fecha": "2026-08-12", "volumen": 20.0}, {"strike": 336.0, "prima": 2.8, "fecha": "2026-08-12", "volumen": 20.0}, {"strike": 340.0, "prima": 4.0, "fecha": "2026-08-12", "volumen": 20.0}, {"strike": 344.0, "prima": 5.2, "fecha": "2026-08-10", "volumen": 49.0}, {"strike": 348.0, "prima": 5.0, "fecha": "2026-07-24", "volumen": 39.0}]}, "05-2027": {"futuro": 339.3, "fecha_futuro": "2026-08-12", "calls": [{"strike": 340.0, "prima": 12.5, "fecha": "2026-07-24", "volumen": 13.0}, {"strike": 344.0, "prima": 8.0, "fecha": "2026-07-27", "volumen": 10.0}, {"strike": 348.0, "prima": 8.0, "fecha": "2026-07-24", "volumen": 48.0}, {"strike": 352.0, "prima": 5.0, "fecha": "2026-08-11", "volumen": 8.0}, {"strike": 356.0, "prima": 4.8, "fecha": "2026-07-27", "volumen": 11.0}, {"strike": 360.0, "prima": 4.0, "fecha": "2026-08-12", "volumen": 4.0}, {"strike": 364.0, "prima": 3.5, "fecha": "2026-07-24", "volumen": 4.0}], "puts": [{"strike": 320.0, "prima": 4.5, "fecha": "2026-07-27", "volumen": 15.0}, {"strike": 324.0, "prima": 5.8, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 328.0, "prima": 7.5, "fecha": "2026-07-27", "volumen": 1.0}, {"strike": 332.0, "prima": 7.5, "fecha": "2026-08-10", "volumen": 40.0}]}, "07-2027": {"futuro": 345.5, "fecha_futuro": "2026-08-12", "calls": [{"strike": 352.0, "prima": 8.5, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 360.0, "prima": 5.5, "fecha": "2026-08-11", "volumen": 3.0}], "puts": [{"strike": 340.0, "prima": 12.0, "fecha": "2026-08-11", "volumen": 20.0}]}, "08-2026": {"futuro": 342.0, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}, "04-2027": {"futuro": 328.0, "fecha_futuro": "2026-08-12", "calls": [], "puts": []}}}}, "tipo_cambio": {"dolar_futuro_mtr": {}}};let MERCADO = MERCADO_ZENI;
+const MERCADO_ZENI = {"fecha_datos": "2026-08-13", "productos": {"TRIGO": {"posiciones": {"07-2026": {"futuro": 219.5, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "11-2026": {"futuro": 220.0, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}, "12-2026": {"futuro": 221.0, "fecha_futuro": "2026-08-13", "calls": [{"strike": 216.0, "prima": 14.0, "fecha": "2026-07-23", "volumen": 1.0}, {"strike": 220.0, "prima": 7.2, "fecha": "2026-08-13", "volumen": 10.0}, {"strike": 224.0, "prima": 7.7, "fecha": "2026-07-23", "volumen": 6.0}, {"strike": 228.0, "prima": 4.0, "fecha": "2026-08-13", "volumen": 10.0}, {"strike": 232.0, "prima": 3.0, "fecha": "2026-08-12", "volumen": 12.0}, {"strike": 236.0, "prima": 2.0, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 240.0, "prima": 2.0, "fecha": "2026-07-24", "volumen": 10.0}], "puts": [{"strike": 200.0, "prima": 0.8, "fecha": "2026-07-21", "volumen": 20.0}, {"strike": 208.0, "prima": 1.5, "fecha": "2026-07-22", "volumen": 4.0}, {"strike": 212.0, "prima": 4.5, "fecha": "2026-07-27", "volumen": 7.0}, {"strike": 216.0, "prima": 4.6, "fecha": "2026-08-12", "volumen": 56.0}, {"strike": 220.0, "prima": 6.5, "fecha": "2026-08-12", "volumen": 5.0}, {"strike": 224.0, "prima": 5.0, "fecha": "2026-07-22", "volumen": 5.0}]}, "01-2027": {"futuro": 224.0, "fecha_futuro": "2026-08-13", "calls": [{"strike": 228.0, "prima": 7.5, "fecha": "2026-07-24", "volumen": 1.0}, {"strike": 232.0, "prima": 4.5, "fecha": "2026-08-13", "volumen": 13.0}, {"strike": 236.0, "prima": 3.3, "fecha": "2026-08-12", "volumen": 4.0}, {"strike": 240.0, "prima": 3.0, "fecha": "2026-08-13", "volumen": 3.0}, {"strike": 244.0, "prima": 2.2, "fecha": "2026-08-11", "volumen": 2.0}, {"strike": 248.0, "prima": 2.0, "fecha": "2026-07-27", "volumen": 1.0}, {"strike": 260.0, "prima": 0.4, "fecha": "2026-08-11", "volumen": 20.0}, {"strike": 264.0, "prima": 0.3, "fecha": "2026-08-13", "volumen": 20.0}], "puts": [{"strike": 208.0, "prima": 1.7, "fecha": "2026-07-22", "volumen": 15.0}, {"strike": 212.0, "prima": 4.0, "fecha": "2026-08-10", "volumen": 1.0}, {"strike": 216.0, "prima": 4.8, "fecha": "2026-08-12", "volumen": 14.0}, {"strike": 220.0, "prima": 5.0, "fecha": "2026-07-23", "volumen": 20.0}, {"strike": 224.0, "prima": 5.0, "fecha": "2026-07-22", "volumen": 5.0}, {"strike": 228.0, "prima": 6.2, "fecha": "2026-07-22", "volumen": 2.0}, {"strike": 232.0, "prima": 15.5, "fecha": "2026-08-11", "volumen": 15.0}]}, "03-2027": {"futuro": 229.1, "fecha_futuro": "2026-08-13", "calls": [{"strike": 232.0, "prima": 7.5, "fecha": "2026-08-12", "volumen": 5.0}], "puts": []}, "09-2026": {"futuro": 223.5, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}, "08-2026": {"futuro": 220.0, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}}}, "MAÍZ": {"posiciones": {"07-2026": {"futuro": 191.8, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "08-2026": {"futuro": 185.0, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}, "09-2026": {"futuro": 189.0, "fecha_futuro": "2026-08-13", "calls": [{"strike": 188.0, "prima": 2.0, "fecha": "2026-08-12", "volumen": 5.0}, {"strike": 192.0, "prima": 1.2, "fecha": "2026-07-27", "volumen": 6.0}, {"strike": 196.0, "prima": 1.4, "fecha": "2026-07-23", "volumen": 17.0}, {"strike": 200.0, "prima": 1.0, "fecha": "2026-07-24", "volumen": 3.0}, {"strike": 204.0, "prima": 0.6, "fecha": "2026-07-24", "volumen": 13.0}, {"strike": 208.0, "prima": 0.5, "fecha": "2026-07-24", "volumen": 33.0}], "puts": [{"strike": 180.0, "prima": 0.2, "fecha": "2026-07-22", "volumen": 2.0}, {"strike": 184.0, "prima": 0.3, "fecha": "2026-08-13", "volumen": 5.0}, {"strike": 188.0, "prima": 1.1, "fecha": "2026-07-21", "volumen": 6.0}]}, "12-2026": {"futuro": 196.3, "fecha_futuro": "2026-08-13", "calls": [{"strike": 192.0, "prima": 8.5, "fecha": "2026-07-23", "volumen": 25.0}, {"strike": 196.0, "prima": 6.2, "fecha": "2026-07-23", "volumen": 15.0}, {"strike": 200.0, "prima": 3.5, "fecha": "2026-08-13", "volumen": 14.0}, {"strike": 204.0, "prima": 3.0, "fecha": "2026-07-24", "volumen": 2.0}, {"strike": 208.0, "prima": 1.6, "fecha": "2026-08-12", "volumen": 10.0}, {"strike": 212.0, "prima": 1.1, "fecha": "2026-08-12", "volumen": 12.0}], "puts": [{"strike": 180.0, "prima": 1.0, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 184.0, "prima": 1.5, "fecha": "2026-07-23", "volumen": 3.0}, {"strike": 188.0, "prima": 2.0, "fecha": "2026-08-10", "volumen": 1.0}, {"strike": 192.0, "prima": 3.3, "fecha": "2026-08-13", "volumen": 25.0}, {"strike": 196.0, "prima": 5.9, "fecha": "2026-08-11", "volumen": 5.0}]}, "04-2027": {"futuro": 195.0, "fecha_futuro": "2026-08-13", "calls": [{"strike": 188.0, "prima": 7.7, "fecha": "2026-07-27", "volumen": 5.0}, {"strike": 192.0, "prima": 8.7, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 196.0, "prima": 6.0, "fecha": "2026-07-23", "volumen": 5.0}, {"strike": 200.0, "prima": 4.5, "fecha": "2026-08-13", "volumen": 114.0}, {"strike": 204.0, "prima": 3.3, "fecha": "2026-08-13", "volumen": 4.0}, {"strike": 208.0, "prima": 2.0, "fecha": "2026-07-27", "volumen": 4.0}], "puts": [{"strike": 180.0, "prima": 2.0, "fecha": "2026-07-22", "volumen": 3.0}, {"strike": 184.0, "prima": 2.8, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 188.0, "prima": 4.4, "fecha": "2026-07-22", "volumen": 5.0}]}, "07-2027": {"futuro": 193.0, "fecha_futuro": "2026-08-13", "calls": [{"strike": 192.0, "prima": 6.0, "fecha": "2026-07-23", "volumen": 4.0}, {"strike": 196.0, "prima": 6.0, "fecha": "2026-08-12", "volumen": 3.0}, {"strike": 200.0, "prima": 4.7, "fecha": "2026-08-13", "volumen": 86.0}, {"strike": 204.0, "prima": 2.7, "fecha": "2026-07-24", "volumen": 10.0}], "puts": [{"strike": 180.0, "prima": 3.3, "fecha": "2026-08-11", "volumen": 50.0}, {"strike": 184.0, "prima": 4.2, "fecha": "2026-08-13", "volumen": 16.0}]}, "09-2027": {"futuro": 197.0, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}, "01-2027": {"futuro": 197.5, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}}}, "SOJA": {"posiciones": {"07-2026": {"futuro": 348.0, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "09-2026": {"futuro": 344.5, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}, "11-2026": {"futuro": 349.0, "fecha_futuro": "2026-08-13", "calls": [{"strike": 340.0, "prima": 16.7, "fecha": "2026-07-22", "volumen": 15.0}, {"strike": 344.0, "prima": 10.8, "fecha": "2026-07-21", "volumen": 6.0}, {"strike": 348.0, "prima": 11.0, "fecha": "2026-07-24", "volumen": 5.0}, {"strike": 352.0, "prima": 6.0, "fecha": "2026-08-13", "volumen": 1.0}, {"strike": 356.0, "prima": 4.5, "fecha": "2026-08-13", "volumen": 5.0}, {"strike": 360.0, "prima": 3.5, "fecha": "2026-08-13", "volumen": 21.0}, {"strike": 364.0, "prima": 4.0, "fecha": "2026-07-24", "volumen": 36.0}, {"strike": 372.0, "prima": 1.5, "fecha": "2026-07-20", "volumen": 42.0}, {"strike": 376.0, "prima": 0.9, "fecha": "2026-08-13", "volumen": 10.0}, {"strike": 380.0, "prima": 1.5, "fecha": "2026-07-20", "volumen": 10.0}], "puts": [{"strike": 316.0, "prima": 0.6, "fecha": "2026-08-10", "volumen": 8.0}, {"strike": 320.0, "prima": 0.8, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 324.0, "prima": 1.0, "fecha": "2026-08-12", "volumen": 10.0}, {"strike": 328.0, "prima": 1.3, "fecha": "2026-08-10", "volumen": 1.0}, {"strike": 332.0, "prima": 1.9, "fecha": "2026-08-12", "volumen": 20.0}, {"strike": 336.0, "prima": 2.8, "fecha": "2026-08-12", "volumen": 20.0}, {"strike": 340.0, "prima": 4.0, "fecha": "2026-08-12", "volumen": 20.0}, {"strike": 344.0, "prima": 5.2, "fecha": "2026-08-10", "volumen": 49.0}, {"strike": 348.0, "prima": 5.0, "fecha": "2026-07-24", "volumen": 39.0}]}, "05-2027": {"futuro": 339.9, "fecha_futuro": "2026-08-13", "calls": [{"strike": 340.0, "prima": 12.5, "fecha": "2026-07-24", "volumen": 13.0}, {"strike": 344.0, "prima": 9.0, "fecha": "2026-08-13", "volumen": 1.0}, {"strike": 348.0, "prima": 8.0, "fecha": "2026-07-24", "volumen": 48.0}, {"strike": 352.0, "prima": 5.8, "fecha": "2026-08-13", "volumen": 14.0}, {"strike": 356.0, "prima": 4.8, "fecha": "2026-07-27", "volumen": 11.0}, {"strike": 360.0, "prima": 4.0, "fecha": "2026-08-12", "volumen": 4.0}, {"strike": 364.0, "prima": 3.5, "fecha": "2026-07-24", "volumen": 4.0}], "puts": [{"strike": 320.0, "prima": 4.5, "fecha": "2026-07-27", "volumen": 15.0}, {"strike": 324.0, "prima": 5.8, "fecha": "2026-08-11", "volumen": 1.0}, {"strike": 328.0, "prima": 7.5, "fecha": "2026-07-27", "volumen": 1.0}, {"strike": 332.0, "prima": 7.5, "fecha": "2026-08-13", "volumen": 2.0}]}, "07-2027": {"futuro": 346.1, "fecha_futuro": "2026-08-13", "calls": [{"strike": 352.0, "prima": 8.5, "fecha": "2026-08-12", "volumen": 1.0}, {"strike": 360.0, "prima": 5.5, "fecha": "2026-08-11", "volumen": 3.0}], "puts": [{"strike": 340.0, "prima": 12.0, "fecha": "2026-08-11", "volumen": 20.0}]}, "08-2026": {"futuro": 342.5, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}, "04-2027": {"futuro": 328.0, "fecha_futuro": "2026-08-13", "calls": [], "puts": []}}}}, "tipo_cambio": {"bcra_a3500": 1483.0, "mtr_spot": 1492.0, "dolar_futuro_mtr": {"04-2027": 1742.0, "06-2026": 1504.5, "12-2026": 1621.0}}};let MERCADO = MERCADO_ZENI;
 
 // ---------- formato argentino ----------
 const fmt = (n, d=2) => n==null ? '—' :
   n.toLocaleString('es-AR',{minimumFractionDigits:d, maximumFractionDigits:d});
 const fmt0 = n => fmt(n,0);
 const fmtUS = (n,d=2) => n==null ? '—' : 'U$S '+fmt(n,d);
+// fecha mas reciente entre las patas de opciones de una estructura (null = sin prima, p.ej. fijacion)
+const maxFecha = (...ops) => ops.map(o=>o&&o.fecha).filter(Boolean).sort().pop() || null;
 
 // ---------- estado ----------
 let prod = null, pos = null;
@@ -182,7 +184,7 @@ function mkFijacion(F){
     patas:[`Venta futuro a ${fmtUS(F)}`],
     precioFinal:S=>F, tnExtra:S=>0,
     mets:[{cls:'neutro',t:'Precio fijo',v:fmtUS(F)}],
-    orden:0
+    orden:0, fecha:null
   };
 }
 function mkDuplicacion(F, c){
@@ -198,7 +200,7 @@ function mkDuplicacion(F, c){
           {cls:'neutro',t:'Precio base',v:fmtUS(base)},
           {cls:'act',t:'Duplica arriba de',v:fmt0(c.strike)},
           {cls:'neutro',t:'Si duplica (pond.)',v:fmtUS(pond)}],
-    orden: -c.prima
+    orden: -c.prima, fecha: c.fecha
   };
 }
 function mkPiso(F, p){
@@ -212,7 +214,7 @@ function mkPiso(F, p){
     mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
           {cls:'neutro',t:'Costo',v:fmtUS(p.prima)},
           {cls:'neutro',t:'Techo',v:'abierto'}],
-    orden: p.prima
+    orden: p.prima, fecha: p.fecha
   };
 }
 function mkCollar(F, p, c){
@@ -228,7 +230,7 @@ function mkCollar(F, p, c){
     mets:[{cls:'piso',t:'Piso',v:fmtUS(piso)},
           {cls:'act',t:'Techo',v:fmtUS(techo)},
           {cls:'neutro',t:'Prima neta',v:fmtUS(neto)}],
-    orden: neto
+    orden: neto, fecha: maxFecha(p,c)
   };
 }
 function mkDupAcotada(F, c1, c2){
@@ -247,7 +249,7 @@ function mkDupAcotada(F, c1, c2){
           {cls:'neutro',t:'Precio base',v:fmtUS(base)},
           {cls:'act',t:'Duplica arriba de',v:fmt0(c1.strike)},
           {cls:'piso',t:'Recupera suba desde',v:fmt0(c2.strike)}],
-    orden: -neto
+    orden: -neto, fecha: maxFecha(c1,c2)
   };
 }
 function mkCallSpreadSolo(F, c1, c2){
@@ -265,7 +267,7 @@ function mkCallSpreadSolo(F, c1, c2){
     mets:[{cls:'neutro',t:'Costo',v:fmtUS(neto)},
           {cls:'plus',t:'Mejora máx.',v:'+'+fmtUS(mejoraMax)},
           {cls:'act',t:'Empieza a pagar en',v:fmt0(c1.strike + neto)}],
-    orden: neto
+    orden: neto, fecha: maxFecha(c1,c2)
   };
 }
 function mkCallSpread(F, c1, c2){
@@ -284,7 +286,7 @@ function mkCallSpread(F, c1, c2){
           {cls:'plus',t:'Participa suba',v:`${fmt0(c1.strike)} a ${fmt0(c2.strike)}`},
           {cls:'neutro',t:'Máximo',v:fmtUS(maximo)},
           {cls:'neutro',t:'Costo neto',v:fmtUS(neto)}],
-    orden: neto
+    orden: neto, fecha: maxFecha(c1,c2)
   };
 }
 function mkPutSpread(F, p2, p1){
@@ -300,7 +302,7 @@ function mkPutSpread(F, p2, p1){
     mets:[{cls:'piso',t:'Protege hasta',v:fmtUS(protMax)},
           {cls:'neutro',t:'Prima neta',v:fmtUS(neto)},
           {cls:'act',t:'Desprotegido bajo',v:fmt0(p1.strike)}],
-    orden: neto
+    orden: neto, fecha: maxFecha(p2,p1)
   };
 }
 function notaPrima(o){
@@ -403,6 +405,13 @@ const GRUPOS = [
   ['pspread','Put spread','Protección parcial a menor costo: cubre hasta el strike lanzado.'],
 ];
 const CAP = 4;
+// Visibilidad por fecha: por defecto solo se ven las estructuras cuya prima más reciente
+// es del último día operado (fecha_datos); al desplegar aparecen todas, ordenadas por fecha.
+function esUltimoDia(e, ultima){ return !e.fecha || e.fecha === ultima; }
+function cmpCronologico(a,b){
+  const fa = a.fecha || '9999-99-99', fb = b.fecha || '9999-99-99';   // fijación (sin prima) primero
+  return fa !== fb ? fb.localeCompare(fa) : (a.orden - b.orden);      // más nuevo arriba
+}
 
 function celdaPrecio(est, S, F){
   const v = est.precioFinal(S);
@@ -424,14 +433,16 @@ function render(){
   if(F==null){ cont.innerHTML = '<div class="vacio">No hay futuro de referencia para armar estructuras acá.</div>'; return; }
   const vol = Math.max(1, parseInt(document.getElementById('volBase').value)||100);
   const g = generar(prod,pos);
+  const ultima = MERCADO.fecha_datos;
   const SB = Math.round(F*0.85), SM = Math.round(F), SA = Math.round(F*1.15);
   let html='';
   for(const [key,titulo,desc] of GRUPOS){
-    const lista = g[key];
+    const lista = g[key].slice().sort(cmpCronologico);
     if(!lista.length) continue;
+    const ocultas = lista.filter(e=>!esUltimoDia(e,ultima)).length;
     let filas='';
     lista.forEach((e,i)=>{
-      const oculta = i>=CAP ? ` data-extra="${key}" style="display:none"` : '';
+      const oculta = !esUltimoDia(e,ultima) ? ` data-extra="${key}" style="display:none"` : '';
       const comp = e.tnExtra(SA) > 0
         ? `<span class="tag-comp">duplica</span>` : `<span class="tag-ok">tn fijas</span>`;
       filas += `<tr class="fila" onclick="toggleDet(this)"${oculta}>
@@ -450,7 +461,7 @@ function render(){
       <tr><th>Estructura</th><th>Si baja 15% (${fmt0(SB)})</th><th>Si queda igual (${fmt0(SM)})</th>
       <th>Si sube 15% (${fmt0(SA)})</th><th>Compromiso</th><th></th></tr>
       ${filas}</table>
-      ${lista.length>CAP?`<button class="masmenos" onclick="mostrarExtra('${key}',this)">Mostrar ${lista.length-CAP} más ▾</button>`:''}
+      ${ocultas>0?`<button class="masmenos" onclick="mostrarExtra('${key}',this)">Mostrar ${ocultas} de días anteriores ▾</button>`:''}
       </div></div>`;
   }
   cont.innerHTML = html || '<div class="vacio">No hay opciones operadas en esta posición. Elegí otra.</div>';
@@ -749,15 +760,17 @@ function renderDispo(){
     `<b>${fmtUS(F)}</b><div class="sub-fut">soja disponible ${dPlaza} · opciones ${etPos(dPos)} · ${DISPO_NOTA[dPlaza]||''} · <span class="corregir">corregir</span></div>`;
   const vol = Math.max(1, parseInt(document.getElementById('volBase').value)||100);
   const g = generarBaseChain(F, d);
+  const ultima = MERCADO.fecha_datos;
   const SB = Math.round(F*0.85), SM = Math.round(F), SA = Math.round(F*1.15);
   const relabel = s => s.replace('Venta futuro a', 'Venta disponible '+dPlaza+' a').replace('Venta futuro', 'Venta disponible '+dPlaza);
   let html='';
   for(const [key,titulo,desc] of GRUPOS){
-    const lista = g[key];
+    const lista = g[key].slice().sort(cmpCronologico);
     if(!lista.length) continue;
+    const ocultas = lista.filter(e=>!esUltimoDia(e,ultima)).length;
     let filas='';
     lista.forEach((e,i)=>{
-      const oculta = i>=CAP ? ` data-extra="d-${key}" style="display:none"` : '';
+      const oculta = !esUltimoDia(e,ultima) ? ` data-extra="d-${key}" style="display:none"` : '';
       const comp = e.tnExtra(SA) > 0 ? `<span class="tag-comp">duplica</span>` : `<span class="tag-ok">tn fijas</span>`;
       const patas = e.patas.map(relabel).join(' · ');
       filas += `<tr class="fila" onclick="toggleDet(this)"${oculta}>
@@ -776,7 +789,7 @@ function renderDispo(){
       <tr><th>Estructura</th><th>Si baja 15% (${fmt0(SB)})</th><th>Si queda igual (${fmt0(SM)})</th>
       <th>Si sube 15% (${fmt0(SA)})</th><th>Compromiso</th><th></th></tr>
       ${filas}</table>
-      ${lista.length>CAP?`<button class="masmenos" onclick="mostrarExtra('d-${key}',this)">Mostrar ${lista.length-CAP} más ▾</button>`:''}
+      ${ocultas>0?`<button class="masmenos" onclick="mostrarExtra('d-${key}',this)">Mostrar ${ocultas} de días anteriores ▾</button>`:''}
       </div></div>`;
   }
   cont.innerHTML = html || '<div class="vacio">No hay opciones operadas en esta posición. Elegí otra.</div>';
