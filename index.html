@@ -556,7 +556,7 @@ function initSel(){
 }
 function initPos(){
   const poss = Object.entries(MERCADO.productos[prod].posiciones)
-    .filter(([,d])=>d.calls.length||d.puts.length).map(([k])=>k).sort();
+    .filter(([,d])=>d.calls.length||d.puts.length||(d.futuro!=null&&d.fecha_futuro===MERCADO.fecha_datos)).map(([k])=>k).sort();
   const el = document.getElementById('selPos');
   el.innerHTML = poss.map(p=>`<button class="chip" data-p="${p}">${etPos(p)}</button>`).join('');
   el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ pos=b.dataset.p; marcar(el,b); render(); });
