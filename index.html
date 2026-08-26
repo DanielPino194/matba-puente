@@ -215,6 +215,22 @@ function mkDuplicacion(F, c){
     orden: -c.prima, fecha: c.fecha
   };
 }
+function mkCallComprado(F, c){
+  const base = F - c.prima;
+  return {
+    id:`callcomp-${c.strike}`, nombre:`Venta + Call comprado ${fmt0(c.strike)}`,
+    patas:[`Venta futuro a ${fmtUS(F)}`,
+           `Compra Call ${etOpPos(c)}${fmt0(c.strike)} · prima ${fmtUS(c.prima)}${notaPrima(c)}`,
+           `Capta la suba por encima de ${fmt0(c.strike)}`],
+    precioFinal:S => (S > c.strike ? base + (S - c.strike) : base),
+    tnExtra:S=>0,
+    mets:[{cls:'piso',t:'Precio asegurado',v:fmtUS(base)},
+          {cls:'plus',t:'Capta suba desde',v:fmt0(c.strike)},
+          {cls:'neutro',t:'Costo',v:fmtUS(c.prima)},
+          {cls:'neutro',t:'Techo',v:'abierto'}],
+    orden: c.prima, fecha: c.fecha
+  };
+}
 function mkPiso(F, p){
   const piso = p.strike - p.prima;
   return {
@@ -331,10 +347,11 @@ function generar(prod, pos){
   const F = d.futuro;
   (d.calls||[]).forEach(o=>{ if(!o._pos) o._pos = pos; });
   (d.puts||[]).forEach(o=>{ if(!o._pos) o._pos = pos; });
-  const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[]};
+  const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[], callcomp:[]};
   if(F==null) return out;
   out.fijacion.push(mkFijacion(F));
   d.calls.forEach(c => out.dup.push(mkDuplicacion(F,c)));
+  d.calls.forEach(c => out.callcomp.push(mkCallComprado(F,c)));
   d.puts.forEach(p => out.piso.push(mkPiso(F,p)));
   d.puts.forEach(p => d.calls.forEach(c => {
     if(c.strike > p.strike) out.collar.push(mkCollar(F,p,c));
@@ -409,6 +426,7 @@ function tablaEscenarios(est, F, vol){
 const GRUPOS = [
   ['fijacion','Referencia','El precio que fijás hoy sin ninguna estructura.'],
   ['dup','Venta con call lanzado (duplicación)','Cobrás un plus hoy; si el mercado supera el strike, entregás el doble a precio ponderado.'],
+  ['callcomp','Venta + call comprado (participa en la suba)','Vendés (disponible o futuro) y comprás un call: asegurás el precio menos la prima, pero si el mercado sube por encima del strike, captás esa suba.'],
   ['dupac','Venta + call spread lanzado (duplicación acotada)','Como la duplicación, pero recuperás la suba por encima del strike comprado.'],
   ['piso','Piso asegurado (compra de put)','Pagás una prima y asegurás un mínimo; el grano queda sin vender, con la suba abierta.'],
   ['collar','Collar (piso y techo)','Piso asegurado financiado con un techo: banda de precios conocida.'],
@@ -720,10 +738,11 @@ function editarDispo(){
 
 // mismo generador que el modo futuro, pero recibiendo la base y la cadena de opciones directamente
 function generarBaseChain(F, d){
-  const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[]};
+  const out = {fijacion:[], dup:[], dupac:[], piso:[], collar:[], cspread:[], cssolo:[], pspread:[], callcomp:[]};
   if(F == null || !d) return out;
   out.fijacion.push(mkFijacion(F));
   d.calls.forEach(c => out.dup.push(mkDuplicacion(F,c)));
+  d.calls.forEach(c => out.callcomp.push(mkCallComprado(F,c)));
   d.puts.forEach(p => out.piso.push(mkPiso(F,p)));
   d.puts.forEach(p => d.calls.forEach(c => { if(c.strike > p.strike) out.collar.push(mkCollar(F,p,c)); }));
   const puts = [...d.puts].sort((a,b)=>a.strike-b.strike);
