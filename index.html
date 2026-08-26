@@ -129,6 +129,11 @@ footer{margin-top:34px;font-size:11px;color:var(--gris2)}
 #dispoWrap .futuro-box{margin-left:auto;text-align:right}
 @media (max-width:640px){#dispoWrap .futuro-box{margin-left:0;text-align:left;width:100%}}
 
+.pase-pos{color:#0a7f3f;font-weight:700}
+.pase-neg{color:#c0392b;font-weight:700}
+#pasesWrap{margin-top:34px;border-top:2px solid var(--linea);padding-top:22px}
+#pasesWrap>h2{font-size:15px;font-weight:800;color:var(--navy);letter-spacing:-.01em;margin-bottom:2px}
+#pasesWrap>.desc{font-size:12px;color:var(--gris2);margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -159,12 +164,19 @@ footer{margin-top:34px;font-size:11px;color:var(--gris2)}
   <div id="dispoResultados"></div>
 </div>
 
+<div id="pasesWrap">
+  <h2>Pases de soja (dispo &rarr; posición)</h2>
+  <div class="desc">Diferencia entre el ajuste de cada futuro de soja y la soja disponible en U$S (Rosario). Pase positivo = la posición vale más que el disponible.</div>
+  <div class="futuro-box" id="pasesBase" style="margin-bottom:12px;cursor:default"></div>
+  <div id="pasesResultados"></div>
+</div>
+
 <footer>Primas y ajustes: MATBA ROFEX (vía reMarkets) sobre base de reportes de cierre Zeni.
 Cada prima conserva la fecha de su última operación. Herramienta interna — no es asesoramiento financiero.</footer>
 </div>
 
 <script>
-const MERCADO_ZENI = {"fecha_datos": "2026-08-25", "productos": {"TRIGO": {"posiciones": {"07-2026": {"futuro": 219.5, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "09-2026": {"futuro": 232.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "11-2026": {"futuro": 226.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "12-2026": {"futuro": 227.0, "fecha_futuro": "2026-08-25", "calls": [{"strike": 228.0, "prima": 7.0, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 232.0, "prima": 5.0, "fecha": "2026-08-25", "volumen": 7.0}, {"strike": 236.0, "prima": 4.0, "fecha": "2026-08-25", "volumen": 2.0}], "puts": []}, "01-2027": {"futuro": 230.0, "fecha_futuro": "2026-08-25", "calls": [{"strike": 240.0, "prima": 3.8, "fecha": "2026-08-25", "volumen": 7.0}, {"strike": 244.0, "prima": 3.2, "fecha": "2026-08-25", "volumen": 1.0}], "puts": [{"strike": 208.0, "prima": 1.5, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 220.0, "prima": 5.0, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 224.0, "prima": 6.8, "fecha": "2026-08-25", "volumen": 7.0}]}, "03-2027": {"futuro": 235.4, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "08-2026": {"futuro": 227.5, "fecha_futuro": "2026-08-24", "calls": [], "puts": []}}}, "MAÍZ": {"posiciones": {"07-2026": {"futuro": 191.8, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "08-2026": {"futuro": 191.0, "fecha_futuro": "2026-08-24", "calls": [], "puts": []}, "09-2026": {"futuro": 198.4, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "12-2026": {"futuro": 206.3, "fecha_futuro": "2026-08-25", "calls": [{"strike": 188.0, "prima": 18.7, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 200.0, "prima": 8.5, "fecha": "2026-08-25", "volumen": 15.0}, {"strike": 208.0, "prima": 5.0, "fecha": "2026-08-25", "volumen": 31.0}, {"strike": 212.0, "prima": 3.0, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 216.0, "prima": 2.6, "fecha": "2026-08-25", "volumen": 3.0}], "puts": [{"strike": 180.0, "prima": 0.2, "fecha": "2026-08-25", "volumen": 5.0}, {"strike": 200.0, "prima": 2.5, "fecha": "2026-08-25", "volumen": 10.0}]}, "04-2027": {"futuro": 205.4, "fecha_futuro": "2026-08-25", "calls": [{"strike": 200.0, "prima": 9.5, "fecha": "2026-08-25", "volumen": 5.0}, {"strike": 204.0, "prima": 8.0, "fecha": "2026-08-25", "volumen": 6.0}, {"strike": 208.0, "prima": 6.5, "fecha": "2026-08-25", "volumen": 13.0}, {"strike": 212.0, "prima": 5.5, "fecha": "2026-08-25", "volumen": 6.0}, {"strike": 216.0, "prima": 3.9, "fecha": "2026-08-25", "volumen": 20.0}], "puts": [{"strike": 188.0, "prima": 2.0, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 192.0, "prima": 3.0, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 196.0, "prima": 3.5, "fecha": "2026-08-25", "volumen": 5.0}, {"strike": 200.0, "prima": 5.3, "fecha": "2026-08-25", "volumen": 6.0}]}, "07-2027": {"futuro": 202.0, "fecha_futuro": "2026-08-25", "calls": [{"strike": 200.0, "prima": 10.2, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 204.0, "prima": 6.6, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 216.0, "prima": 4.0, "fecha": "2026-08-25", "volumen": 3.0}, {"strike": 220.0, "prima": 2.8, "fecha": "2026-08-25", "volumen": 3.0}], "puts": [{"strike": 196.0, "prima": 5.8, "fecha": "2026-08-25", "volumen": 35.0}]}, "09-2027": {"futuro": 206.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "01-2027": {"futuro": 205.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "03-2027": {"futuro": 204.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "12-2027": {"futuro": 209.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "11-2026": {"futuro": 200.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}}}, "SOJA": {"posiciones": {"07-2026": {"futuro": 348.0, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "09-2026": {"futuro": 355.3, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "11-2026": {"futuro": 360.9, "fecha_futuro": "2026-08-25", "calls": [{"strike": 344.0, "prima": 19.0, "fecha": "2026-08-25", "volumen": 2.0}], "puts": []}, "05-2027": {"futuro": 349.7, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "07-2027": {"futuro": 355.8, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "08-2026": {"futuro": 350.0, "fecha_futuro": "2026-08-24", "calls": [], "puts": []}, "04-2027": {"futuro": 328.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "01-2027": {"futuro": 363.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}}}}, "tipo_cambio": {"dolar_futuro_mtr": {}}};let MERCADO = MERCADO_ZENI;
+const MERCADO_ZENI = {"fecha_datos": "2026-08-25", "productos": {"TRIGO": {"posiciones": {"07-2026": {"futuro": 219.5, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "09-2026": {"futuro": 232.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "11-2026": {"futuro": 226.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "12-2026": {"futuro": 227.0, "fecha_futuro": "2026-08-25", "calls": [{"strike": 228.0, "prima": 7.0, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 232.0, "prima": 5.0, "fecha": "2026-08-25", "volumen": 7.0}, {"strike": 236.0, "prima": 4.0, "fecha": "2026-08-25", "volumen": 2.0}], "puts": []}, "01-2027": {"futuro": 230.0, "fecha_futuro": "2026-08-25", "calls": [{"strike": 240.0, "prima": 3.8, "fecha": "2026-08-25", "volumen": 7.0}, {"strike": 244.0, "prima": 3.2, "fecha": "2026-08-25", "volumen": 1.0}], "puts": [{"strike": 208.0, "prima": 1.5, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 220.0, "prima": 5.0, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 224.0, "prima": 6.8, "fecha": "2026-08-25", "volumen": 7.0}]}, "03-2027": {"futuro": 235.4, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "08-2026": {"futuro": 227.5, "fecha_futuro": "2026-08-24", "calls": [], "puts": []}}}, "MAÍZ": {"posiciones": {"07-2026": {"futuro": 191.8, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "08-2026": {"futuro": 191.0, "fecha_futuro": "2026-08-24", "calls": [], "puts": []}, "09-2026": {"futuro": 198.4, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "12-2026": {"futuro": 206.3, "fecha_futuro": "2026-08-25", "calls": [{"strike": 188.0, "prima": 18.7, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 200.0, "prima": 8.5, "fecha": "2026-08-25", "volumen": 15.0}, {"strike": 208.0, "prima": 5.0, "fecha": "2026-08-25", "volumen": 31.0}, {"strike": 212.0, "prima": 3.0, "fecha": "2026-08-25", "volumen": 1.0}, {"strike": 216.0, "prima": 2.6, "fecha": "2026-08-25", "volumen": 3.0}], "puts": [{"strike": 180.0, "prima": 0.2, "fecha": "2026-08-25", "volumen": 5.0}, {"strike": 200.0, "prima": 2.5, "fecha": "2026-08-25", "volumen": 10.0}]}, "04-2027": {"futuro": 205.4, "fecha_futuro": "2026-08-25", "calls": [{"strike": 200.0, "prima": 9.5, "fecha": "2026-08-25", "volumen": 5.0}, {"strike": 204.0, "prima": 8.0, "fecha": "2026-08-25", "volumen": 6.0}, {"strike": 208.0, "prima": 6.5, "fecha": "2026-08-25", "volumen": 13.0}, {"strike": 212.0, "prima": 5.5, "fecha": "2026-08-25", "volumen": 6.0}, {"strike": 216.0, "prima": 3.9, "fecha": "2026-08-25", "volumen": 20.0}], "puts": [{"strike": 188.0, "prima": 2.0, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 192.0, "prima": 3.0, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 196.0, "prima": 3.5, "fecha": "2026-08-25", "volumen": 5.0}, {"strike": 200.0, "prima": 5.3, "fecha": "2026-08-25", "volumen": 6.0}]}, "07-2027": {"futuro": 202.0, "fecha_futuro": "2026-08-25", "calls": [{"strike": 200.0, "prima": 10.2, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 204.0, "prima": 6.6, "fecha": "2026-08-25", "volumen": 10.0}, {"strike": 216.0, "prima": 4.0, "fecha": "2026-08-25", "volumen": 3.0}, {"strike": 220.0, "prima": 2.8, "fecha": "2026-08-25", "volumen": 3.0}], "puts": [{"strike": 196.0, "prima": 5.8, "fecha": "2026-08-25", "volumen": 35.0}]}, "09-2027": {"futuro": 206.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "01-2027": {"futuro": 205.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "03-2027": {"futuro": 204.5, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "12-2027": {"futuro": 209.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "11-2026": {"futuro": 200.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}}}, "SOJA": {"posiciones": {"07-2026": {"futuro": 348.0, "fecha_futuro": "2026-07-24", "calls": [], "puts": []}, "09-2026": {"futuro": 355.3, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "11-2026": {"futuro": 360.9, "fecha_futuro": "2026-08-25", "calls": [{"strike": 344.0, "prima": 19.0, "fecha": "2026-08-25", "volumen": 2.0}], "puts": []}, "05-2027": {"futuro": 349.7, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "07-2027": {"futuro": 355.8, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "08-2026": {"futuro": 350.0, "fecha_futuro": "2026-08-24", "calls": [], "puts": []}, "04-2027": {"futuro": 328.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}, "01-2027": {"futuro": 363.0, "fecha_futuro": "2026-08-25", "calls": [], "puts": []}}}}, "tipo_cambio": {"dolar_futuro_mtr": {}}, "disponible": {"TRIGO": {"Rosario": 222.0}, "MAÍZ": {"Rosario": 186.5}, "SOJA": {"Rosario": 350.5}}};let MERCADO = MERCADO_ZENI;
 
 // ---------- formato argentino ----------
 const fmt = (n, d=2) => n==null ? '—' :
@@ -656,7 +668,7 @@ async function actualizarDesdeMatba(){
   ponerFecha();
   if(est){ est.className = 'matba-est ok'; est.textContent = '✓ Cierres oficiales Zeni'; }
   initSel();
-  initDispo();
+  initDispo(); renderPases();
 }
 document.getElementById('btnMatba').onclick = actualizarDesdeMatba;
 let matbaHold;
@@ -794,6 +806,32 @@ function renderDispo(){
   }
   cont.innerHTML = html || '<div class="vacio">No hay opciones operadas en esta posición. Elegí otra.</div>';
 }
+
+function cronoKey(p){ const [m,y]=p.split('-'); return parseInt(y)*100+parseInt(m); }
+function renderPases(){
+  const wrap = document.getElementById('pasesWrap');
+  if(!wrap) return;
+  const soja = MERCADO.productos && MERCADO.productos['SOJA'];
+  const disp = MERCADO.disponible && MERCADO.disponible.SOJA;
+  const dispo = disp && (disp['Rosario']!=null ? disp['Rosario'] : (Object.values(disp)[0]!=null?Object.values(disp)[0]:null));
+  if(!soja || dispo==null){ wrap.style.display='none'; return; }
+  wrap.style.display='';
+  document.getElementById('pasesBase').innerHTML =
+    `<b>${fmtUS(dispo)}</b><div class="sub-fut">soja disponible Rosario &middot; ajuste ${etFecha(MERCADO.fecha_datos)}</div>`;
+  const poss = Object.entries(soja.posiciones)
+    .filter(([,d])=>d.futuro!=null && d.fecha_futuro===MERCADO.fecha_datos)
+    .map(([k,d])=>({pos:k,fut:d.futuro,fecha:d.fecha_futuro}))
+    .sort((a,b)=>cronoKey(a.pos)-cronoKey(b.pos));
+  const filas = poss.map(p=>{
+    const pase = p.fut - dispo;
+    const cls = pase>=0?'pase-pos':'pase-neg';
+    const s = pase>=0?'+':'';
+    return `<tr><td>${etPos(p.pos)}</td><td>${fmtUS(p.fut)}</td><td class="${cls}">${s}${fmt(pase,1)}</td><td style="color:var(--gris2);font-size:11px">ajuste ${etFecha(p.fecha)}</td></tr>`;
+  }).join('');
+  document.getElementById('pasesResultados').innerHTML = poss.length
+    ? `<div class="tabla-wrap"><table class="cmp"><tr><th>Posición</th><th>Futuro</th><th>Pase vs dispo (U$S/tn)</th><th>Fecha ajuste</th></tr>${filas}</table></div>`
+    : '<div class="vacio">No hay futuros de soja para calcular pases.</div>';
+}
 // ========== fin venta disponible ==========
 
 document.getElementById('volBase').addEventListener('change', render);
@@ -809,4 +847,3 @@ if ('serviceWorker' in navigator && location.protocol === 'https:')
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
