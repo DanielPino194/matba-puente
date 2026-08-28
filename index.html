@@ -91,6 +91,11 @@ tr.det-row>td{background:#FAFCFE;padding:14px 16px 18px;white-space:normal}
 .det-patas{font-size:12.5px;color:var(--gris);margin-bottom:10px}
 .det-patas b{color:var(--navy)}
 .nota-prima{color:var(--ambar);font-size:11px}
+.badge-teo{display:inline-block;background:#E7F0FB;color:#1973B8;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700}
+.badge-real{display:inline-block;background:#EAF6EF;color:#2E8B57;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700}
+#crossWrap{margin-top:34px;border-top:2px solid var(--linea);padding-top:22px}
+#crossWrap>h2{font-size:15px;font-weight:800;color:var(--navy);letter-spacing:-.01em;margin-bottom:2px}
+#crossWrap>.desc{font-size:12px;color:var(--gris2);margin-bottom:12px}
 .mets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .met{border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;
   font-variant-numeric:tabular-nums;background:var(--blanco);border:1px solid var(--linea);color:var(--gris)}
@@ -169,6 +174,20 @@ footer{margin-top:34px;font-size:11px;color:var(--gris2)}
   <div class="desc">Diferencia entre el ajuste de cada futuro de soja y la soja disponible en U$S (Rosario). Pase positivo = la posición vale más que el disponible.</div>
   <div class="futuro-box" id="pasesBase" style="margin-bottom:12px;cursor:default"></div>
   <div id="pasesResultados"></div>
+</div>
+
+<div id="crossWrap">
+  <h2>Estructuras cruzadas (grano base + call de otro grano)</h2>
+  <div class="desc">Base: venta de un futuro (p. ej. Trigo Ene). Sobre otro grano se lanza o compra un call; esa pata queda <b>condicional</b> a que el call sea ejercible a su vencimiento. Primas <span class="badge-real">🟢 real</span> = operadas en Zeni; <span class="badge-teo">🔵 teórica</span> = Black-76 cuando la posición no tiene calls operados.</div>
+  <div class="dispo-ctrls">
+    <div class="ctrl"><div class="lbl">Base (futuro que vendés)</div><div class="tabs" id="crossBaseProd"></div></div>
+    <div class="ctrl"><div class="lbl">Posición base</div><div class="tabs" id="crossBasePos"></div></div>
+    <div class="ctrl"><div class="lbl">Call sobre</div><div class="tabs" id="crossCallProd"></div></div>
+    <div class="ctrl"><div class="lbl">Posición call</div><div class="tabs" id="crossCallPos"></div></div>
+    <div class="ctrl vol-ctrl"><div class="lbl">Vol. teórica %</div><input type="number" id="crossVol" value="22" min="1" step="1"></div>
+    <div class="futuro-box" id="crossBase" style="cursor:default"></div>
+  </div>
+  <div id="crossResultados"></div>
 </div>
 
 <footer>Primas y ajustes: MATBA ROFEX (vía reMarkets) sobre base de reportes de cierre Zeni.
@@ -686,7 +705,7 @@ async function actualizarDesdeMatba(){
   ponerFecha();
   if(est){ est.className = 'matba-est ok'; est.textContent = '✓ Cierres oficiales Zeni'; }
   initSel();
-  initDispo(); renderPases();
+  initDispo(); renderPases(); initCross();
 }
 document.getElementById('btnMatba').onclick = actualizarDesdeMatba;
 let matbaHold;
@@ -852,6 +871,124 @@ function renderPases(){
     : '<div class="vacio">No hay futuros de soja para calcular pases.</div>';
 }
 // ========== fin venta disponible ==========
+
+// ========== Estructuras cruzadas (base grano A + call de grano B) ==========
+const CROSS_R = 0.045;
+let cbProd=null, cbPos=null, ccProd=null, ccPos=null;
+function erf(x){
+  const t=1/(1+0.3275911*Math.abs(x));
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return x>=0?y:-y;
+}
+const normalCDF = x => 0.5*(1+erf(x/Math.SQRT2));
+function black76Call(F,K,T,vol,r){
+  if(T<=0||vol<=0) return Math.max(F-K,0);
+  const s=vol*Math.sqrt(T), d1=(Math.log(F/K)+0.5*vol*vol*T)/s, d2=d1-s;
+  return Math.exp(-r*T)*(F*normalCDF(d1)-K*normalCDF(d2));
+}
+// vencimiento de opción ~ día 24 del mes anterior a la posición del futuro
+function vtoOpcion(pos){ const [m,y]=pos.split('-').map(Number); let om=m-1,oy=y; if(om<1){om=12;oy--;} return new Date(Date.UTC(oy,om-1,24)); }
+function fmtFechaCorta(dt){ return `${dt.getUTCDate()}/${dt.getUTCMonth()+1}/${String(dt.getUTCFullYear()).slice(2)}`; }
+function aniosHasta(vto){ const [y,m,d]=MERCADO.fecha_datos.split('-').map(Number); const hoy=new Date(Date.UTC(y,m-1,d)); return Math.max((vto-hoy)/31536000000,0); }
+function crossVolVal(){ const el=document.getElementById('crossVol'); return Math.max(1,parseFloat(el&&el.value)||22)/100; }
+function basesCross(){
+  const b=[];
+  for(const [pr,o] of Object.entries(MERCADO.productos))
+    for(const [po,d] of Object.entries(o.posiciones))
+      if(d.futuro!=null) b.push([pr,po]);
+  return b;
+}
+function callsCross(prodX,posX,vol){
+  const dX=MERCADO.productos[prodX].posiciones[posX], Fx=dX.futuro;
+  const vt=vtoOpcion(posX), T=aniosHasta(vt), out=[];
+  if(dX.calls&&dX.calls.length) dX.calls.forEach(c=>out.push({strike:c.strike,prima:c.prima,fecha:c.fecha,teorica:false}));
+  else [0.9,0.95,1,1.05,1.1].forEach(m=>{ const K=Math.round(Fx*m*2)/2; out.push({strike:K,prima:+black76Call(Fx,K,T,vol,CROSS_R).toFixed(2),fecha:null,teorica:true}); });
+  out.sort((a,b)=>a.strike-b.strike);
+  return {Fx,T,vto:vt,list:out};
+}
+function badgePrima(c){
+  return c.teorica ? ` <span class="badge-teo">🔵 teórica</span>`
+                   : ` <span class="badge-real">🟢 real${c.fecha?' '+etFecha(c.fecha):''}</span>`;
+}
+function renderCross(){
+  const cont=document.getElementById('crossResultados'); if(!cont) return;
+  if(!cbProd||!cbPos||!ccProd||!ccPos){ cont.innerHTML=''; return; }
+  const dB=MERCADO.productos[cbProd].posiciones[cbPos], F=dB.futuro;
+  const vol=crossVolVal();
+  const {Fx,vto,list}=callsCross(ccProd,ccPos,vol);
+  const cb=document.getElementById('crossBase');
+  if(cb) cb.innerHTML=`<b>${fmtUS(F)}</b><div class="sub-fut">venta futuro ${cbProd} ${etPos(cbPos)} · call sobre ${ccProd} ${etPos(ccPos)} (fut ${fmtUS(Fx)}, vto ${fmtFechaCorta(vto)})</div>`;
+  if(F==null||!list.length){ cont.innerHTML='<div class="vacio">No hay futuros suficientes para armar la estructura cruzada.</div>'; return; }
+  const escsX=[-0.2,-0.1,0,0.1,0.2].map(v=>Math.round(Fx*(1+v)));
+  const hayTeo=list.some(x=>x.teorica);
+  const grupos=[
+    ['Call lanzado (cobrás la prima)', true,  c=>F+c.prima],
+    ['Call comprado (pagás la prima)', false, c=>F-c.prima]
+  ];
+  let html='';
+  for(const [titulo,lanzado,baseFn] of grupos){
+    let filas='';
+    list.forEach(c=>{
+      const base=baseFn(c);
+      const neto = lanzado ? (X=>base-Math.max(X-c.strike,0)) : (X=>base+Math.max(X-c.strike,0));
+      const be = lanzado ? c.strike+c.prima : c.strike+c.prima;
+      const resumen = lanzado
+        ? [`Precio ${cbProd} mejorado: <b>${fmtUS(base)}</b>`,`Break-even ${ccProd}: <b>${fmt0(be)}</b>`,`Ejercible si ${ccProd} &gt; ${fmt0(c.strike)}`]
+        : [`Precio ${cbProd} asegurado: <b>${fmtUS(base)}</b>`,`Capta suba de ${ccProd} desde ${fmt0(c.strike)}`,`Recupera prima si ${ccProd} &gt; ${fmt0(be)}`];
+      const esc=escsX.map(X=>`<tr><td>${fmt0(X)}</td><td>${X>c.strike?'sí (ejercido)':'no'}</td><td>${fmt(neto(X))}</td></tr>`).join('');
+      filas+=`<tr class="fila" onclick="toggleDet(this)">
+        <td>Call ${etPos(ccPos)} ${fmt0(c.strike)}${badgePrima(c)}<span class="mini-patas">Venta futuro ${cbProd} ${etPos(cbPos)} ${fmtUS(F)} · ${lanzado?'Lanza':'Compra'} call ${ccProd} ${fmt0(c.strike)} · prima ${fmtUS(c.prima)}</span></td>
+        <td>${fmtUS(c.prima)}</td><td class="v-navy">${fmtUS(base)}</td><td>${fmt0(c.strike)}</td><td><span class="flecha-fila">›</span></td>
+      </tr>
+      <tr class="det-row"><td colspan="5">
+        <div class="det-patas">${resumen.join(' &nbsp;·&nbsp; ')}</div>
+        <table class="esc"><tr><th>Si ${ccProd} ${etPos(ccPos)} cierra en</th><th>Call</th><th>Precio ${cbProd} neto equiv. U$S/tn</th></tr>${esc}</table>
+        <div class="nota">La pata de ${cbProd} se cobra fija; el resultado del call ajusta el precio equivalente por tn (mismo tonelaje en ambas patas).${hayTeo?' Primas 🔵 teóricas: Black-76, vol '+fmt0(vol*100)+'%, r '+fmt0(CROSS_R*100)+'%, vto '+fmtFechaCorta(vto)+'.':''}</div>
+      </td></tr>`;
+    });
+    html+=`<div class="seccion"><h2>${titulo}</h2>
+      <div class="tabla-wrap"><table class="cmp">
+      <tr><th>Estructura</th><th>Prima</th><th>Precio ${cbProd} base</th><th>Strike</th><th></th></tr>
+      ${filas}</table></div></div>`;
+  }
+  cont.innerHTML=html;
+}
+function initCross(){
+  const wrap=document.getElementById('crossWrap'); if(!wrap) return;
+  const bases=basesCross();
+  if(!bases.length){ wrap.style.display='none'; return; }
+  wrap.style.display='';
+  const prods=[...new Set(bases.map(b=>b[0]))];
+  const bp=document.getElementById('crossBaseProd'), cp=document.getElementById('crossCallProd');
+  bp.innerHTML=prods.map(p=>`<button class="chip" data-p="${p}">${p}</button>`).join('');
+  cp.innerHTML=prods.map(p=>`<button class="chip" data-p="${p}">${p}</button>`).join('');
+  cbProd = prods.includes('TRIGO')?'TRIGO':prods[0];
+  ccProd = prods.includes('SOJA')?'SOJA':(prods.find(p=>p!==cbProd)||prods[0]);
+  const posDe = pr => Object.entries(MERCADO.productos[pr].posiciones).filter(([,d])=>d.futuro!=null).map(([k])=>k).sort((a,b)=>cronoKey(a)-cronoKey(b));
+  function setBasePos(){
+    const el=document.getElementById('crossBasePos'), poss=posDe(cbProd);
+    el.innerHTML=poss.map(p=>`<button class="chip" data-p="${p}">${etPos(p)}</button>`).join('');
+    el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cbPos=b.dataset.p;marcar(el,b);renderCross();});
+    cbPos = (cbProd==='TRIGO'&&poss.includes('01-2027'))?'01-2027':(poss.includes(cbPos)?cbPos:poss[0]);
+    if(cbPos) marcar(el, el.querySelector(`[data-p="${cbPos}"]`));
+  }
+  function setCallPos(){
+    const el=document.getElementById('crossCallPos'), poss=posDe(ccProd);
+    el.innerHTML=poss.map(p=>`<button class="chip" data-p="${p}">${etPos(p)}</button>`).join('');
+    el.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ccPos=b.dataset.p;marcar(el,b);renderCross();});
+    const def = (ccProd==='SOJA'&&poss.includes('05-2027'))?'05-2027':((ccProd==='MAÍZ'&&poss.includes('04-2027'))?'04-2027':null);
+    ccPos = def || (poss.includes(ccPos)?ccPos:poss[0]);
+    if(ccPos) marcar(el, el.querySelector(`[data-p="${ccPos}"]`));
+  }
+  bp.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cbProd=b.dataset.p;marcar(bp,b);setBasePos();renderCross();});
+  cp.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ccProd=b.dataset.p;marcar(cp,b);setCallPos();renderCross();});
+  marcar(bp, bp.querySelector(`[data-p="${cbProd}"]`));
+  marcar(cp, cp.querySelector(`[data-p="${ccProd}"]`));
+  setBasePos(); setCallPos();
+  const vi=document.getElementById('crossVol'); if(vi) vi.onchange=renderCross;
+  renderCross();
+}
+// ========== fin estructuras cruzadas ==========
 
 document.getElementById('volBase').addEventListener('change', render);
 document.getElementById('volBase').addEventListener('change', function(){ var c=document.getElementById('dispoResultados'); if(c) renderDispo(); });
